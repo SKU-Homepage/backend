@@ -2,9 +2,9 @@ spring:
   application:
     name: sku-homepage
   datasource:
-    url: jdbc:mysql://${RDS_HOST}:3306/${RDS_DB_NAME}?allowPublicKeyRetrieval=true&useSSL=false&serverTimezone=UTC&characterEncoding=UTF-8
-    username: your-username
-    password: your-password
+    url: jdbc:mysql://${RDS_HOST}:3306/${RDS_DB_NAME}
+    username: ${RDS_USERNAME}
+    password: ${RDS_PASSWORD}
     driver-class-name: com.mysql.cj.jdbc.Driver
   jpa:
     hibernate:
