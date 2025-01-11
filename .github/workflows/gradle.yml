@@ -92,3 +92,15 @@ jobs:
             --deployment-config-name CodeDeployDefault.OneAtATime \
             --deployment-group-name sku-deploy-group \
             --s3-location bucket=sku-homepage,bundleType=zip,key=spring-build.zip
+      
+      # discord 알림봇 설정
+      - name: Discord Notify
+        uses: sarisia/actions-status-discord@v1
+        if: always()
+        with:
+          webhook: ${{ secrets.DISCORD_WEBHOOK_URL }}
+          status: ${{ job.status }}
+          title: "deploy"
+          description: "Build and deploy to GitHub Pages"
+          url: "https://github.com/sarisia/actions-status-discord"
+          username: GitHub Actions
