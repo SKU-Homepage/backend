@@ -1,3 +1,6 @@
+# Aws CodeDeploy에서 사용하는 설정 파일, 배포 시 실행할 스크립트 및 명령을 정의한다.
+# Aws CodeDeploy가 어떻게 애플리케이션을 배포해야 하는지를 정의
+
 version: 0.0
 
 # Deploy 대상 서버의 운영체제를 표시
