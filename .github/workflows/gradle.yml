@@ -88,10 +88,10 @@ jobs:
       # CodeDeploy에 배포 요청
       - name: Code Deploy Deployment Request
         run: |
-          aws deploy create-deployment --application-name sku-homepage \
+          aws deploy create-deployment --application-name sku-codeDeploy \
             --deployment-config-name CodeDeployDefault.OneAtATime \
-            --deployment-group-name sku-deploy-group \
-            --s3-location bucket=sku-homepage,bundleType=zip,key=spring-build.zip
+            --deployment-group-name sku-codeDeploy-Group \
+            --s3-location bucket=sku-bucket,bundleType=zip,key=spring-build.zip
       
       # discord 알림봇 설정
       - name: Discord Notify
