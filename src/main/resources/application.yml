@@ -11,6 +11,8 @@ spring:
       ddl-auto: update
     properties:
       hibernate:
+
+
         dialect: org.hibernate.dialect.MySQLDialect
     show-sql: true
     open-in-view: true
