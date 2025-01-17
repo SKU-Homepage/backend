@@ -83,7 +83,7 @@ jobs:
         run: |
           aws s3 cp \
             --region ap-northeast-2 \
-            ./spring-build.zip s3://sku-homepage
+            ./spring-build.zip s3://sku-bucket
 
       # CodeDeploy에 배포 요청
       - name: Code Deploy Deployment Request
