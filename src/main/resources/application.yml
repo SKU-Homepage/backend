@@ -1,0 +1,35 @@
+spring:
+  application:
+    name: sku-homepage
+  datasource:
+    url: jdbc:mysql://${RDS_HOST}:3306/${RDS_DB_NAME}
+    username: ${RDS_USERNAME}
+    password: ${RDS_PASSWORD}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+
+
+        dialect: org.hibernate.dialect.MySQLDialect
+    show-sql: true
+    open-in-view: true
+
+
+server:
+  port: 8080
+  server:
+    servlet:
+      context-path: "/"
+
+logging:
+  level:
+    root: info
+    org.springframework.security: debug
+
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
+    operations-sorter: method
