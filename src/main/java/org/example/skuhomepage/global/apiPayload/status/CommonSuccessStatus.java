@@ -11,7 +11,10 @@ import lombok.Getter;
 @AllArgsConstructor
 public enum CommonSuccessStatus implements BaseCode {
   // Common Success
-  _OK(HttpStatus.OK, "COMMON200", "응답에 성공했습니다.");
+  _OK(HttpStatus.OK, "COMMON200", "응답에 성공했습니다."),
+  _CREATED(HttpStatus.CREATED, "COMMON201", "리소스가 성공적으로 생성되었습니다."),
+  ;
+
   private final HttpStatus httpStatus;
   private final String code;
   private final String message;
