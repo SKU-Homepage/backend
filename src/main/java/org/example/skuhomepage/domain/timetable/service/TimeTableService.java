@@ -1,20 +1,41 @@
 package org.example.skuhomepage.domain.timetable.service;
 
-import org.example.skuhomepage.domain.timetable.dto.TimeTableRequestDTO;
-import org.example.skuhomepage.domain.timetable.dto.TimeTableResponseDTO;
+import org.example.skuhomepage.domain.timetable.dto.TimeTableRequestDTO.selfSubjectDTO;
+import org.example.skuhomepage.domain.timetable.dto.TimeTableResponseDTO.AddSubjectDTO;
+import org.example.skuhomepage.domain.timetable.dto.TimeTableResponseDTO.DeleteSubjectDTO;
+import org.example.skuhomepage.domain.timetable.dto.TimeTableResponseDTO.MyTimeTableDTO;
+import org.example.skuhomepage.domain.timetable.dto.TimeTableResponseDTO.TimeTableListDTO;
+import org.example.skuhomepage.domain.timetable.dto.TimeTableResponseDTO.TodayTimeTableDTO;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.stereotype.Service;
 
-public interface TimeTableService {
-  TimeTableResponseDTO.TodayTimeTableDTO getTodayTimeTable(UserDetails userDetails);
+import lombok.RequiredArgsConstructor;
 
-  TimeTableResponseDTO.MyTimeTableDTO getMyTimeTable(UserDetails userDetails);
+@Service
+@RequiredArgsConstructor
+public class TimeTableService {
 
-  TimeTableResponseDTO.TimeTableListDTO getTimeTableList(UserDetails userDetails);
+  public TodayTimeTableDTO getTodayTimeTable(UserDetails userDetails) {
+    return null;
+  }
 
-  TimeTableResponseDTO.AddSubjectDTO addSubject(UserDetails userDetails, Long subjectId);
+  public MyTimeTableDTO getMyTimeTable(UserDetails userDetails) {
+    return null;
+  }
 
-  TimeTableResponseDTO.AddSubjectDTO addSelfSubject(
-      UserDetails userDetails, TimeTableRequestDTO.selfSubjectDTO request);
+  public TimeTableListDTO getTimeTableList(UserDetails userDetails) {
+    return null;
+  }
 
-  TimeTableResponseDTO.DeleteSubjectDTO deleteSubject(UserDetails userDetails, Long subjectId);
+  public AddSubjectDTO addSubject(UserDetails userDetails, Long subjectId) {
+    return null;
+  }
+
+  public AddSubjectDTO addSelfSubject(UserDetails userDetails, selfSubjectDTO request) {
+    return null;
+  }
+
+  public DeleteSubjectDTO deleteSubject(UserDetails userDetails, Long subjectId) {
+    return null;
+  }
 }
