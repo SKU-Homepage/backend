@@ -1,5 +1,7 @@
 package org.example.skuhomepage.global.apiPayload;
 
+import java.net.URI;
+
 import org.example.skuhomepage.global.apiPayload.code.BaseCode;
 import org.example.skuhomepage.global.apiPayload.status.CommonSuccessStatus;
 
@@ -26,20 +28,29 @@ public class ApiResponse<T> {
   private final String message;
 
   @JsonInclude(JsonInclude.Include.NON_NULL)
+  @Schema(description = "API URI", example = "/api/resource/{id}", hidden = true)
+  private URI location;
+
+  @JsonInclude(JsonInclude.Include.NON_NULL)
   @Schema(description = "API 응답 데이터")
   private T result;
 
   public static <T> ApiResponse<T> onSuccess(T result) {
     return new ApiResponse<>(
-        true, CommonSuccessStatus._OK.getCode(), CommonSuccessStatus._OK.getMessage(), result);
+        true,
+        CommonSuccessStatus._OK.getCode(),
+        CommonSuccessStatus._OK.getMessage(),
+        null,
+        result);
   }
 
-  public static <T> ApiResponse<T> onCreated(T location) {
+  public static <T> ApiResponse<T> onCreated(URI location) {
     return new ApiResponse<>(
         true,
         CommonSuccessStatus._CREATED.getCode(),
         CommonSuccessStatus._CREATED.getReasonHttpStatus().getMessage(),
-        location);
+        location,
+        null);
   }
 
   public static <T> ApiResponse<T> of(BaseCode code, T result) {
@@ -47,10 +58,11 @@ public class ApiResponse<T> {
         true,
         code.getReasonHttpStatus().getCode(),
         code.getReasonHttpStatus().getMessage(),
+        null,
         result);
   }
 
   public static <T> ApiResponse<T> onFailure(String code, String message, T data) {
-    return new ApiResponse<>(false, code, message, data);
+    return new ApiResponse<>(false, code, message, null, data);
   }
 }

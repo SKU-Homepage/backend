@@ -30,9 +30,9 @@ public class UserCalendarController implements UserCalendarControllerSpec {
   }
 
   @Override
-  public ApiResponse<UserScheduleCreateDTO> addUserSchedule(AddUserScheduleDTO requestDTO) {
+  public ApiResponse<Void> addUserSchedule(AddUserScheduleDTO requestDTO) {
 
-    return ApiResponse.onCreated(new UserScheduleCreateDTO(URI.create("/api/calendars/users/1")));
+    return ApiResponse.onCreated(URI.create("/api/calendars/users/1"));
   }
 
   @Override

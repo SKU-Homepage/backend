@@ -2,6 +2,8 @@ package org.example.skuhomepage.domain.calendar.controller;
 
 import java.util.List;
 
+import jakarta.validation.Valid;
+
 import org.example.skuhomepage.domain.calendar.dto.UserCalendarRequestDTO.*;
 import org.example.skuhomepage.domain.calendar.dto.UserCalendarResponseDTO.*;
 import org.example.skuhomepage.domain.calendar.exception.CalendarErrorStatus;
@@ -28,7 +30,7 @@ public interface UserCalendarControllerSpec {
   @Operation(summary = "개인 일정 추가", description = "개인 일정을 추가하는 API")
   @ApiErrorCodeExample(CalendarErrorStatus.class)
   @PostMapping
-  ApiResponse<UserScheduleCreateDTO> addUserSchedule(@RequestBody AddUserScheduleDTO requestDTO);
+  ApiResponse<Void> addUserSchedule(@Valid @RequestBody AddUserScheduleDTO requestDTO);
 
   @Operation(summary = "개인 일정 수정", description = "개인 일정을 수정하는 API")
   @ApiErrorCodeExample(CalendarErrorStatus.class)
