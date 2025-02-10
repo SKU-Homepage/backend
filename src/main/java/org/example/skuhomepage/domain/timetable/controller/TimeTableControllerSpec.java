@@ -1,5 +1,6 @@
 package org.example.skuhomepage.domain.timetable.controller;
 
+import jakarta.validation.Valid;
 import org.example.skuhomepage.domain.timetable.dto.TimeTableRequestDTO;
 import org.example.skuhomepage.domain.timetable.dto.TimeTableResponseDTO;
 import org.example.skuhomepage.domain.timetable.dto.TimeTableResponseDTO.TodayTimeTableDTO;
@@ -64,7 +65,7 @@ public interface TimeTableControllerSpec {
       @Parameter(name = "userDetails", description = "인증된 사용자 정보", hidden = true)
           @AuthenticationPrincipal
           UserDetails userDetails,
-      @RequestBody(description = "사용자가 직접 입력한 수업 정보", required = true)
+      @Valid @RequestBody(description = "사용자가 직접 입력한 수업 정보", required = true)
           TimeTableRequestDTO.selfSubjectDTO request);
 
   @DeleteMapping("/{subjectId}")
