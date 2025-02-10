@@ -1,6 +1,7 @@
 package org.example.skuhomepage.domain.timetable.controller;
 
 import jakarta.validation.Valid;
+
 import org.example.skuhomepage.domain.timetable.dto.TimeTableRequestDTO;
 import org.example.skuhomepage.domain.timetable.dto.TimeTableResponseDTO;
 import org.example.skuhomepage.domain.timetable.dto.TimeTableResponseDTO.TodayTimeTableDTO;
