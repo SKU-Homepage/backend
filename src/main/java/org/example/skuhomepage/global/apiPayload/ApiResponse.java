@@ -9,7 +9,6 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
-
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -38,15 +37,20 @@ public class ApiResponse<T> {
 
   public static <T> ApiResponse<T> onSuccess(T result) {
     return new ApiResponse<>(
-        true, CommonSuccessStatus._OK.getCode(), CommonSuccessStatus._OK.getMessage(), result);
+        true,
+        CommonSuccessStatus._OK.getCode(),
+        CommonSuccessStatus._OK.getMessage(),
+        null,
+        result);
   }
 
-  public static <T> ApiResponse<T> onCreated(T location) {
+  public static <T> ApiResponse<T> onCreated(URI location) {
     return new ApiResponse<>(
         true,
         CommonSuccessStatus._CREATED.getCode(),
         CommonSuccessStatus._CREATED.getReasonHttpStatus().getMessage(),
-        location);
+        location,
+        null);
   }
 
   public static <T> ApiResponse<T> of(BaseCode code, T result) {
@@ -54,11 +58,11 @@ public class ApiResponse<T> {
         true,
         code.getReasonHttpStatus().getCode(),
         code.getReasonHttpStatus().getMessage(),
+        null,
         result);
   }
 
   public static <T> ApiResponse<T> onFailure(String code, String message, T data) {
-    return new ApiResponse<>(false, code, message, data);
+    return new ApiResponse<>(false, code, message, null, data);
   }
 }
-
