@@ -1,4 +1,3 @@
 [submodule "backend-env"]
-  path = backend-env
-	url = git@github.com:SKU-Homepage/backend-env.git
-
+	path = backend-env
+	url = https://github.com/SKU-Homepage/backend-env.git
