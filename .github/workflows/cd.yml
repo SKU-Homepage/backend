@@ -1,29 +1,24 @@
-name: spring CICD(deploy)
-
+name: spring CD
 on:
   push:
-    branches: [ "develop" ]
-  pull_request:
     branches: [ "develop" ]
 
 permissions:
   contents: read
 
 jobs:
-  build:
+  deploy:
     runs-on: ubuntu-22.04
     steps:
-      - name: checkout
+      - name: Checkout code
         uses: actions/checkout@v3
-        
-      # JDK를 17 버전으로 세팅
+
       - name: Set up JDK 17
         uses: actions/setup-java@v3
         with:
           java-version: '17'
           distribution: 'temurin'
 
-      # Gradle 캐싱-> 빌드 속도 UP
       - name: Gradle caching
         uses: actions/cache@v3
         with:
@@ -32,7 +27,7 @@ jobs:
             ~/.gradle/wrapper
           key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
           restore-keys: |
-            ${{ runner.os }}-gradle-    
+            ${{ runner.os }}-gradle-
 
       - name: Make application.yml
         run: |
@@ -40,7 +35,7 @@ jobs:
           touch ./application.yml
           touch ./application-datasource.yml
           touch ./application-prod.yml
-          
+
           echo "$APPLICATION" > ./application.yml
           echo "$APPLICATION_DATASOURCE" > ./application-datasource.yml
           echo "$APPLICATION_PROD" > ./application-prod.yml
@@ -50,15 +45,12 @@ jobs:
           APPLICATION_PROD: ${{ secrets.APPLICATION_PROD }}
         shell: bash
 
-      # ./gradlew 권한 설정
       - name: ./gradlew 권한 설정
         run: chmod +x ./gradlew
 
-      # Gradle build (Test 제외)
-      - name: Build with Gradle
+      - name: Build with Gradle (Test 제외)
         run: ./gradlew build -x test
 
-      # AWS에 연결
       - name: Connect to AWS
         uses: aws-actions/configure-aws-credentials@v1
         with:
@@ -66,7 +58,6 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_ACTION_SECRET_ACCESS_KEY }}
           aws-region: ap-northeast-2
 
-      # 빌드파일을 ZIP 파일로 생성
       - name: Make zip file
         run: |
           mkdir deploy
@@ -92,7 +83,7 @@ jobs:
             --deployment-config-name CodeDeployDefault.OneAtATime \
             --deployment-group-name sku-codeDeploy-Group \
             --s3-location bucket=sku-bucket,bundleType=zip,key=spring-build.zip
-      
+
       # discord 알림봇 설정
       - name: Discord Notify
         uses: sarisia/actions-status-discord@v1

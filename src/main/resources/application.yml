@@ -20,8 +20,16 @@ spring:
 
 server:
   port: 8080
+  server:
+    servlet:
+      context-path: "/"
 
 logging:
   level:
     root: info
     org.springframework.security: debug
+
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
+    operations-sorter: method
