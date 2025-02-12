@@ -26,12 +26,13 @@ out/
 !**/src/main/**/out/
 !**/src/test/**/out/
 *.env
+.env
 ### NetBeans ###
 /nbproject/private/
 /nbbuild/
 /dist/
 /nbdist/
 /.nb-gradle/
-
+/src/main/resources/application*.yml
 ### VS Code ###
 .vscode/

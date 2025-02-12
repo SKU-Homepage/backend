@@ -12,6 +12,13 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
+        with:
+          submodules: true
+          token: ${{ secrets.ACTION_TOKEN }}
+
+      - name: Update submodule
+        run: |
+          git submodule update --remote
 
       - name: Set up JDK 17
         uses: actions/setup-java@v3
@@ -29,21 +36,21 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-gradle-
 
-      - name: Make application.yml
-        run: |
-          cd ./src/main/resources
-          touch ./application.yml
-          touch ./application-datasource.yml
-          touch ./application-prod.yml
-
-          echo "$APPLICATION" > ./application.yml
-          echo "$APPLICATION_DATASOURCE" > ./application-datasource.yml
-          echo "$APPLICATION_PROD" > ./application-prod.yml
-        env:
-          APPLICATION: ${{ secrets.APPLICATION }}
-          APPLICATION_DATASOURCE: ${{ secrets.APPLICATION_DATASOURCE }}
-          APPLICATION_PROD: ${{ secrets.APPLICATION_PROD }}
-        shell: bash
+#      - name: Make application-prod.yml
+#        run: |
+#          cd ./src/main/resources
+#          touch ./application.yml
+#          touch ./application-datasource.yml
+#          touch ./application-prod.yml
+#
+#          echo "$APPLICATION" > ./application.yml
+#          echo "$APPLICATION_DATASOURCE" > ./application-datasource.yml
+#          echo "$APPLICATION_PROD" > ./application-prod.yml
+#        env:
+#          APPLICATION: ${{ secrets.APPLICATION }}
+#          APPLICATION_DATASOURCE: ${{ secrets.APPLICATION_DATASOURCE }}
+#          APPLICATION_PROD: ${{ secrets.APPLICATION_PROD }}
+#        shell: bash
 
       - name: ./gradlew 권한 설정
         run: chmod +x ./gradlew
@@ -69,19 +76,22 @@ jobs:
           cp ./build/libs/*.jar ./deploy/
           zip -r -qq -j ./spring-build.zip ./deploy
 
+      # S3에 zip 파일 업로드
       - name: Upload to S3
         run: |
           aws s3 cp \
             --region ap-northeast-2 \
-            ./spring-build.zip s3://sku-homepage
+            ./spring-build.zip s3://sku-bucket
 
+      # CodeDeploy에 배포 요청
       - name: Code Deploy Deployment Request
         run: |
-          aws deploy create-deployment --application-name sku-homepage \
+          aws deploy create-deployment --application-name sku-codeDeploy \
             --deployment-config-name CodeDeployDefault.OneAtATime \
-            --deployment-group-name sku-deploy-group \
-            --s3-location bucket=sku-homepage,bundleType=zip,key=spring-build.zip
+            --deployment-group-name sku-codeDeploy-Group \
+            --s3-location bucket=sku-bucket,bundleType=zip,key=spring-build.zip
 
+      # discord 알림봇 설정
       - name: Discord Notify
         uses: sarisia/actions-status-discord@v1
         if: always()

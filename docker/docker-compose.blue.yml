@@ -8,3 +8,4 @@ services:
     container_name: spring-blue
     environment:
       TZ: "Asia/Seoul"
+      SPRING_PROFILES_ACTIVE: "prod"
