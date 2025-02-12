@@ -46,6 +46,8 @@ if [ -z "$EXIST_BLUE" ]; then
     sudo docker image prune -af
 
     echo "green 중단 완료 : $(date +%Y)-$(date +%m)-$(date +%d) $(date +%H):$(date +%M):$(date +%S)" >> /home/ubuntu/deploy.log
+
+
   fi
 
 # blue가 실행중이면 green up
@@ -75,6 +77,7 @@ else
       sudo docker image prune -af
 
       echo "blue 중단 완료 : $(date +%Y)-$(date +%m)-$(date +%d) $(date +%H):$(date +%M):$(date +%S)" >> /home/ubuntu/deploy.log
+
   fi
 fi
 
