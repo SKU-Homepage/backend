@@ -1,5 +1,7 @@
 package org.example.skuhomepage.domain.skunotice.controller;
 
+import jakarta.validation.Valid;
+
 import org.example.skuhomepage.domain.skunotice.dto.SkuNoticeRequestDTO;
 import org.example.skuhomepage.domain.skunotice.dto.SkuNoticeResponseDTO;
 import org.example.skuhomepage.domain.skunotice.dto.SkuNoticeResponseDTO.NoticeListDTO;
@@ -8,12 +10,7 @@ import org.example.skuhomepage.global.annotation.ApiErrorCodeExample;
 import org.example.skuhomepage.global.apiPayload.ApiResponse;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -29,7 +26,8 @@ public interface SkuNoticeControllerSpec {
   ApiResponse<NoticeListDTO> getSkuNotice(
       @Parameter(description = "인증된 사용자 정보", hidden = true) @AuthenticationPrincipal
           UserDetails userDetails,
-      @Parameter(description = "키워드", example = "장학") @RequestParam String keyword);
+      @Parameter(description = "키워드", example = "장학") @RequestParam(required = false)
+          String keyword);
 
   @Operation(summary = "공지사항 찜 등록하기", description = "공지사항 찜을 설정하는 api")
   @ApiErrorCodeExample(SkuNoticeErrorStatus.class)
@@ -47,7 +45,10 @@ public interface SkuNoticeControllerSpec {
   ApiResponse<SkuNoticeResponseDTO.NoticeListDTO> getSkuNoticeByLike(
       @Parameter(name = "userDetails", description = "인증된 사용자 정보", hidden = true)
           @AuthenticationPrincipal
-          UserDetails userDetails);
+          UserDetails userDetails,
+      @Parameter(description = "정렬 방식", example = "desc")
+          @RequestParam(required = false, defaultValue = "desc")
+          String order);
 
   @Operation(summary = "키워드 조회하기", description = "공지사항 키워드를 모두 조회하는 api")
   @ApiErrorCodeExample(SkuNoticeErrorStatus.class)
@@ -60,17 +61,17 @@ public interface SkuNoticeControllerSpec {
   @Operation(summary = "공지사항 키워드 등록하기", description = "공지사항 키워드를 등록하는 api")
   @ApiErrorCodeExample(SkuNoticeErrorStatus.class)
   @PostMapping("/keywords")
-  ApiResponse<Boolean> postSkuNoticeKeyword(
+  ApiResponse<SkuNoticeResponseDTO.NoticeKeywordListDTO> postSkuNoticeKeyword(
       @Parameter(name = "userDetails", description = "인증된 사용자 정보", hidden = true)
           @AuthenticationPrincipal
           UserDetails userDetails,
-      @Parameter(description = "공지사항 키워드", example = "장학", required = true)
+      @Parameter(description = "공지사항 키워드", example = "장학", required = true) @Valid @RequestBody
           SkuNoticeRequestDTO.KeywordDTO keyword);
 
   @Operation(summary = "공지사항 키워드 삭제하기", description = "공지사항 키워드를 삭제하는 api")
   @ApiErrorCodeExample(SkuNoticeErrorStatus.class)
   @DeleteMapping("/keywords")
-  ApiResponse<Boolean> deleteSkuNoticeKeyword(
+  ApiResponse<Void> deleteSkuNoticeKeyword(
       @Parameter(name = "userDetails", description = "인증된 사용자 정보", hidden = true)
           @AuthenticationPrincipal
           UserDetails userDetails);
@@ -81,5 +82,8 @@ public interface SkuNoticeControllerSpec {
   ApiResponse<SkuNoticeResponseDTO.EcNoticeListDTO> getSkuEcNotice(
       @Parameter(name = "userDetails", description = "인증된 사용자 정보", hidden = true)
           @AuthenticationPrincipal
-          UserDetails userDetails);
+          UserDetails userDetails,
+      @Parameter(description = "정렬 방식", example = "desc")
+          @RequestParam(required = false, defaultValue = "desc")
+          String order);
 }
