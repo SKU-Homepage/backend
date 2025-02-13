@@ -74,6 +74,8 @@ jobs:
           cp ./docker/Dockerfile ./deploy/
           cp ./scripts/deploy.sh ./deploy/
           cp ./build/libs/*.jar ./deploy/
+          
+          echo "${{secrets.DISCORD_SCRIPT}}"> deploy/discord.sh
           zip -r -qq -j ./spring-build.zip ./deploy
 
       # S3에 zip 파일 업로드
@@ -99,6 +101,6 @@ jobs:
           webhook: ${{ secrets.DISCORD_WEBHOOK_URL }}
           status: ${{ job.status }}
           title: "deploy"
-          description: "Build and deploy to GitHub Pages"
+          description: "Deploy script 정상적으로 실행 완료"
           url: "https://github.com/sarisia/actions-status-discord"
           username: GitHub Actions
