@@ -16,7 +16,7 @@ public class SkuCalendarResponseDTO {
       @Schema(description = "일정 시작일", example = "2025-02-20") LocalDate startDate,
       @Schema(description = "일정 종료일", example = "2025-02-20") LocalDate endDate) {}
 
-  public static List<SkuScheduleDTO> toSkuScheduleDTOList(GoogleCalendarResponseDTO dto) {
+  public static List<SkuScheduleDTO> toDto(GoogleCalendarResponseDTO dto) {
 
     List<SkuScheduleDTO> schedules = new ArrayList<>();
 

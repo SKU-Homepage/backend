@@ -88,6 +88,6 @@ public class SkuCalendarService {
       throw new GeneralException(CalendarErrorStatus.SKU_CALENDAR_ERROR);
     }
 
-    return SkuCalendarResponseDTO.toSkuScheduleDTOList(response.getBody());
+    return SkuCalendarResponseDTO.toDto(response.getBody());
   }
 }
