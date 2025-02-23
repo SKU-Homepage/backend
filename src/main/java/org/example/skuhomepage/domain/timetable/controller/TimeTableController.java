@@ -11,6 +11,7 @@ import org.example.skuhomepage.domain.timetable.dto.TimeTableResponseDTO.MyTimeT
 import org.example.skuhomepage.domain.timetable.dto.TimeTableResponseDTO.TimeTableDTO;
 import org.example.skuhomepage.domain.timetable.dto.TimeTableResponseDTO.TimeTableListDTO;
 import org.example.skuhomepage.domain.timetable.dto.TimeTableResponseDTO.TodayTimeTableDTO;
+import org.example.skuhomepage.domain.timetable.dto.TimeTableResponseDTO.TodayTimeTableListDTO;
 import org.example.skuhomepage.domain.timetable.service.TimeTableService;
 import org.example.skuhomepage.global.apiPayload.ApiResponse;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -24,10 +25,15 @@ public class TimeTableController implements TimeTableControllerSpec {
   private final TimeTableService timeTableService;
 
   @Override
-  public ApiResponse<TimeTableResponseDTO.TodayTimeTableDTO> getTodayTimeTable(
+  public ApiResponse<TimeTableResponseDTO.TodayTimeTableListDTO> getTodayTimeTable(
       UserDetails userDetails) {
     TimeTableResponseDTO.TodayTimeTableDTO result = timeTableService.getTodayTimeTable(userDetails);
-    return ApiResponse.onSuccess(new TodayTimeTableDTO("1교시", "자료구조", "북악관 608호"));
+    return ApiResponse.onSuccess(
+        new TodayTimeTableListDTO(
+            List.of(
+                new TodayTimeTableDTO("1교시", "자료구조", "북악관 608호", "9:00 -11:45"),
+                new TodayTimeTableDTO("2교시", "알고리즘", "북악관 607호", "9:00 -11:45"),
+                new TodayTimeTableDTO("3교시", "네트워크", "북악관 610호", "9:00 -11:45"))));
   }
 
   @Override
