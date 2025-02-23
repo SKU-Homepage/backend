@@ -25,7 +25,9 @@ public interface UserCalendarControllerSpec {
   ApiResponse<List<UserScheduleDTO>> getUserCalendar(
       @Parameter(description = "조회 연도", example = "2025") @RequestParam int year,
       @Parameter(description = "조회 월", example = "3") @RequestParam int month,
-      @Parameter(description = "조회 일", example = "31") @RequestParam(required = false) int day);
+      @Parameter(description = "조회 일", example = "31")
+          @RequestParam(required = false, defaultValue = "0")
+          int day);
 
   @Operation(summary = "개인 일정 추가", description = "개인 일정을 추가하는 API")
   @ApiErrorCodeExample(CalendarErrorStatus.class)
