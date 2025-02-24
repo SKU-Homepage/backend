@@ -27,11 +27,6 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
 
-      - name: Start Redis
-        uses: supercharge/redis-github-action@1.7.0
-        with:
-          redis-remove-container: true
-
       - name: Gradle caching
         uses: actions/cache@v3
         with:
