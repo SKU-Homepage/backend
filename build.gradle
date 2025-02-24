@@ -41,6 +41,12 @@ dependencies {
     //swagger
     implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.1'
     implementation 'org.springdoc:springdoc-openapi-starter-webmvc-api:2.8.1'
+
+    // firebase
+    implementation 'com.google.firebase:firebase-admin:9.4.3'
+
+    // redis
+    implementation 'org.springframework.boot:spring-boot-starter-data-redis'
 }
 tasks.named('compileJava') {
     dependsOn 'spotlessApply'
@@ -68,7 +74,7 @@ processResources.dependsOn('copySecret')
 
 tasks.register('copySecret', Copy) {
     from './backend-env'
-    include "application*.yml"  // 복사할 파일들
+    include "application*.yml", "*.json"  // 복사할 파일들
     into 'src/main/resources'  // 복사 위치
 }
 
