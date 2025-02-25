@@ -57,7 +57,8 @@ public class MyPageService {
   }
 
   public MyPageResponseDTO.LoginResultDTO googleLogin(String code, int env) {
-    GoogleDTO.OAuthToken oAuthToken = googleUtil.requestToken(code, env);
+    String decode = URLDecoder.decode(code, StandardCharsets.UTF_8);
+    GoogleDTO.OAuthToken oAuthToken = googleUtil.requestToken(decode, env);
     GoogleDTO.UserInfo userInfo = googleUtil.requestUserInfo(oAuthToken.getAccess_token());
 
     validateSkunivEmail(userInfo.getEmail());
