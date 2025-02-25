@@ -10,7 +10,8 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 public enum MyPageErrorStatus implements BaseErrorCode {
-  USER_NOT_FOUND(HttpStatus.NOT_FOUND, "MYPAGE404001", "사용자를 찾을 수 없습니다.");
+  USER_NOT_FOUND(HttpStatus.NOT_FOUND, "MYPAGE404001", "사용자를 찾을 수 없습니다."),
+  EMAIL_NOT_VALID(HttpStatus.BAD_REQUEST, "MYPAGE400001", "이메일 형식이 skuniv가 아닙니다");
 
   private final HttpStatus httpStatus;
   private final String code;

@@ -1,11 +1,8 @@
 package org.example.skuhomepage.domain.mypage.controller;
 
-import java.time.LocalDateTime;
-
+import org.example.skuhomepage.domain.mypage.dto.MyPageRequestDTO.signupRequestDTO;
 import org.example.skuhomepage.domain.mypage.dto.MyPageResponseDTO;
-import org.example.skuhomepage.domain.mypage.dto.MyPageResponseDTO.LoginResultDTO;
 import org.example.skuhomepage.domain.mypage.dto.MyPageResponseDTO.MyPageInfoDTO;
-import org.example.skuhomepage.domain.mypage.dto.MyPageResponseDTO.SignupResultDTO;
 import org.example.skuhomepage.domain.mypage.service.MyPageService;
 import org.example.skuhomepage.global.apiPayload.ApiResponse;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -27,21 +24,14 @@ public class MyPageController implements MyPageControllerSpec {
   }
 
   @Override
-  public ApiResponse<SignupResultDTO> signUp(UserDetails userDetails) {
-    MyPageResponseDTO.SignupResultDTO result = mypageService.signUp(userDetails);
-    return ApiResponse.onSuccess(
-        new SignupResultDTO("김서경", "예술대학", "디자인학부", "전공", "2021418008", "4학년", "재학"));
+  public ApiResponse<Void> signUp(signupRequestDTO request, UserDetails userDetails) {
+    mypageService.signUp(userDetails, request);
+    return ApiResponse.onSuccess(null);
   }
 
   @Override
-  public ApiResponse<LoginResultDTO> googleLogin(String code) {
-    MyPageResponseDTO.LoginResultDTO result = mypageService.googleLogin(code);
-    return ApiResponse.onSuccess(
-        new LoginResultDTO(
-            1L,
-            "qws1566@skuniv.ac.kr",
-            "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJxd3MxNTY2QHNrdW5pdi5hYy5rciIsImV4cCI6MTY0NzQwNjYwNn0.7",
-            "",
-            LocalDateTime.parse("2022-02-24T07:00:00.000")));
+  public ApiResponse<MyPageResponseDTO.LoginResultDTO> googleLogin(String code, int env) {
+    MyPageResponseDTO.LoginResultDTO result = mypageService.googleLogin(code, env);
+    return ApiResponse.onSuccess(result);
   }
 }
