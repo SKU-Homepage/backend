@@ -24,7 +24,7 @@ public interface SkuCalendarControllerSpec {
   ApiResponse<List<SkuCalendarResponseDTO.SkuScheduleDTO>> getSkuCalendar(
       @Parameter(description = "조회 연도", example = "2025") @RequestParam int year,
       @Parameter(description = "조회 월", example = "2") @RequestParam int month,
-      @Parameter(description = "조회 일", example = "20")
+      @Parameter(description = "조회 일", example = "21")
           @RequestParam(required = false, defaultValue = "0")
           int day);
 }
