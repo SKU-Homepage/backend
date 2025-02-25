@@ -1,5 +1,8 @@
 package org.example.skuhomepage.global.security;
 
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.stereotype.Component;
@@ -47,6 +50,8 @@ public class GoogleUtil {
 
   public GoogleDTO.OAuthToken requestToken(String authorizationCode, int env) {
     String redirectUri = getRedirectUri(env);
+
+    String encodedRedirectUri = URLEncoder.encode(redirectUri, StandardCharsets.UTF_8);
     HttpHeaders headers = new HttpHeaders();
     headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
 
@@ -54,26 +59,26 @@ public class GoogleUtil {
     params.add("code", authorizationCode);
     params.add("client_id", clientId);
     params.add("client_secret", clientSecret);
-    params.add("redirect_uri", redirectUri);
+    params.add("redirect_uri", encodedRedirectUri);
     params.add("grant_type", "authorization_code");
 
     log.info(
         "요청된 params: code={}, client_id={}, redirect_uri={}",
         authorizationCode,
         clientId,
-        redirectUri);
+        encodedRedirectUri);
 
-    log.info("Google Auth Request1: redirect_uri={}", redirectUri);
+    log.info("Google Auth Request1: redirect_uri={}", encodedRedirectUri);
 
     HttpEntity<MultiValueMap<String, String>> requestEntity = new HttpEntity<>(params, headers);
 
-    log.info("Google Auth Request2: redirect_uri={}", redirectUri);
+    log.info("Google Auth Request2: redirect_uri={}", encodedRedirectUri);
 
     try {
-      log.info("Google Auth Request3: redirect_uri={}", redirectUri);
+      log.info("Google Auth Request3: redirect_uri={}", encodedRedirectUri);
       ResponseEntity<String> response =
           restTemplate.exchange(GOOGLE_TOKEN_URL, HttpMethod.POST, requestEntity, String.class);
-      log.info("Google Auth Request4: redirect_uri={}", redirectUri);
+      log.info("Google Auth Request4: redirect_uri={}", encodedRedirectUri);
 
       log.info("구글 토큰 값: {}", response.getBody());
 
@@ -84,7 +89,7 @@ public class GoogleUtil {
       log.error(
           "구글 액세스 토큰 요청 실패 - code: {}, redirect_uri: {}, error: {}",
           authorizationCode,
-          redirectUri,
+          encodedRedirectUri,
           e.getMessage());
 
       throw new RuntimeException("구글 액세스 토큰 요청 실패");
