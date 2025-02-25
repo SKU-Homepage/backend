@@ -68,16 +68,19 @@ public class GoogleUtil {
     try {
       ResponseEntity<String> response =
           restTemplate.exchange(GOOGLE_TOKEN_URL, HttpMethod.POST, requestEntity, String.class);
+
       log.info("구글 토큰 값: {}", response.getBody());
 
       ObjectMapper objectMapper = new ObjectMapper();
       return objectMapper.readValue(response.getBody(), GoogleDTO.OAuthToken.class);
     } catch (Exception e) {
+
       log.error(
           "구글 액세스 토큰 요청 실패 - code: {}, redirect_uri: {}, error: {}",
           authorizationCode,
           redirectUri,
           e.getMessage());
+
       throw new RuntimeException("구글 액세스 토큰 요청 실패");
     }
   }
