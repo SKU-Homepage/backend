@@ -1,12 +1,8 @@
 package org.example.skuhomepage.global.config;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.converter.FormHttpMessageConverter;
-import org.springframework.http.converter.HttpMessageConverter;
+import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.web.client.RestTemplate;
 
 @Configuration
@@ -15,10 +11,12 @@ public class RestTemplateConfig {
   @Bean
   public RestTemplate restTemplate() {
     RestTemplate restTemplate = new RestTemplate();
+    SimpleClientHttpRequestFactory factory = new SimpleClientHttpRequestFactory();
 
-    List<HttpMessageConverter<?>> messageConverters = new ArrayList<>();
-    messageConverters.add(new FormHttpMessageConverter());
-    restTemplate.setMessageConverters(messageConverters);
+    factory.setConnectTimeout(3000);
+    factory.setReadTimeout(3000);
+
+    restTemplate.setRequestFactory(factory);
 
     return restTemplate;
   }
