@@ -4,7 +4,6 @@ import jakarta.validation.Valid;
 
 import org.example.skuhomepage.domain.timetable.dto.TimeTableRequestDTO;
 import org.example.skuhomepage.domain.timetable.dto.TimeTableResponseDTO;
-import org.example.skuhomepage.domain.timetable.dto.TimeTableResponseDTO.TodayTimeTableDTO;
 import org.example.skuhomepage.domain.timetable.exception.TimeTableErrorStatus;
 import org.example.skuhomepage.global.annotation.ApiErrorCodeExample;
 import org.example.skuhomepage.global.apiPayload.ApiResponse;
@@ -28,7 +27,7 @@ public interface TimeTableControllerSpec {
   @GetMapping("/today")
   @Operation(summary = "오늘의 수업시간표 조회하기", description = "오늘의 수업시간표를 조회하는 api")
   @ApiErrorCodeExample(TimeTableErrorStatus.class)
-  ApiResponse<TodayTimeTableDTO> getTodayTimeTable(
+  ApiResponse<TimeTableResponseDTO.TodayTimeTableListDTO> getTodayTimeTable(
       @Parameter(name = "userDetails", description = "인증된 사용자 정보", hidden = true)
           @AuthenticationPrincipal
           UserDetails userDetails);

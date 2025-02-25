@@ -5,13 +5,14 @@ import java.util.List;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Schema;
 
-public record TimeTableResponseDTO() {
+public class TimeTableResponseDTO {
 
   public record TodayTimeTableDTO(
       @Schema(description = "수업 시간", example = "1교시") // 크롤링 값에 따라 example 변경 될 수도 있음
           String time,
       @Schema(description = "수업 이름", example = "자료구조") String subject,
-      @Schema(description = "장소", example = "북악관 608호") String classroom) {}
+      @Schema(description = "장소", example = "북악관 608호") String classroom,
+      @Schema(description = "수업 시간", example = "9:00 -11:45") String classtime) {}
 
   public record MyTimeTableDTO(
       @ArraySchema(
@@ -45,4 +46,10 @@ public record TimeTableResponseDTO() {
       @Schema(description = "과목 이름", example = "자료구조") String subject,
       @Schema(description = "수업 시간", example = "월 1교시") String time,
       @Schema(description = "장소", example = "북악관 608호") String classroom) {}
+
+  public record TodayTimeTableListDTO(
+      @ArraySchema(
+              schema = @Schema(implementation = TodayTimeTableDTO.class),
+              arraySchema = @Schema(description = "과목 리스트"))
+          List<TodayTimeTableDTO> timeTables) {}
 }
