@@ -1,6 +1,5 @@
 package org.example.skuhomepage.domain.mypage.dto;
 
-
 import io.swagger.v3.oas.annotations.media.Schema;
 
 public class MyPageRequestDTO {
@@ -15,4 +14,3 @@ public class MyPageRequestDTO {
       @Schema(description = "약관 동의 여부 1", example = "true") boolean agreement1,
       @Schema(description = "약관 동의 여부 2", example = "true") boolean agreement2) {}
 }
-

@@ -1,6 +1,5 @@
 package org.example.skuhomepage.domain.mypage.service;
 
-
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 
@@ -30,7 +29,6 @@ public class MyPageService {
   private final PasswordEncoder passwordEncoder;
   private final UserRepository userRepository;
   private final JwtUtil jwtUtil;
-
 
   public MyPageResponseDTO.MyPageInfoDTO getMyInfo(UserDetails userDetails) {
     return null;
@@ -68,6 +66,5 @@ public class MyPageService {
   private User createNewUser(GoogleDTO.UserInfo googleUser) {
     User newUser = UserConverter.toUser(googleUser, passwordEncoder);
     return userRepository.save(newUser);
-
   }
 }

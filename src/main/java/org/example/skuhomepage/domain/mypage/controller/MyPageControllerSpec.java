@@ -1,6 +1,5 @@
 package org.example.skuhomepage.domain.mypage.controller;
 
-
 import jakarta.validation.Valid;
 
 import org.example.skuhomepage.domain.mypage.dto.MyPageRequestDTO;
