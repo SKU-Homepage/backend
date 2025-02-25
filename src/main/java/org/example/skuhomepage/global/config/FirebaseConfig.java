@@ -1,12 +1,14 @@
 package org.example.skuhomepage.global.config;
 
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 
 import javax.annotation.PostConstruct;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.io.ClassPathResource;
 
 import com.google.auth.oauth2.GoogleCredentials;
 import com.google.firebase.FirebaseApp;
@@ -18,11 +20,16 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class FirebaseConfig {
 
+  @Value("${firebase.service-account-file.path}")
+  private String keyFileSrc;
+
   @PostConstruct
   public void initialize() {
     try {
-      FileInputStream serviceAccount =
-          new FileInputStream("src/main/resources/service-account-file.json");
+
+      ClassPathResource keyFile = new ClassPathResource(keyFileSrc);
+
+      InputStream serviceAccount = keyFile.getInputStream();
       FirebaseOptions options =
           FirebaseOptions.builder()
               .setCredentials(GoogleCredentials.fromStream(serviceAccount))
