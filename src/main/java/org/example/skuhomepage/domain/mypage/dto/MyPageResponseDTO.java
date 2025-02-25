@@ -2,7 +2,9 @@ package org.example.skuhomepage.domain.mypage.dto;
 
 import java.time.LocalDateTime;
 
+
 import org.example.skuhomepage.domain.mypage.entity.User;
+
 
 import io.swagger.v3.oas.annotations.media.Schema;
 
@@ -31,4 +33,5 @@ public class MyPageResponseDTO {
       return new LoginResultDTO(user.getId(), user.getAccount(), accessToken, LocalDateTime.now());
     }
   }
+
 }
