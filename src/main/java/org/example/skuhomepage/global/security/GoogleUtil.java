@@ -64,23 +64,18 @@ public class GoogleUtil {
         clientId,
         redirectUri);
 
-    log.info("Google Auth Request1: redirect_uri={}", redirectUri);
-
     HttpEntity<MultiValueMap<String, String>> requestEntity = new HttpEntity<>(params, headers);
 
-    log.info("Google Auth Request2: redirect_uri={}", redirectUri);
-
     try {
-      log.info("Google Auth Request3: redirect_uri={}", redirectUri);
       ResponseEntity<String> response =
           restTemplate.exchange(GOOGLE_TOKEN_URL, HttpMethod.POST, requestEntity, String.class);
-      log.info("Google Auth Request4: redirect_uri={}", redirectUri);
 
       log.info("구글 토큰 값: {}", response.getBody());
 
       ObjectMapper objectMapper = new ObjectMapper();
       return objectMapper.readValue(response.getBody(), GoogleDTO.OAuthToken.class);
     } catch (Exception e) {
+      log.error("예외 발생 전 redirectUri 값 확인: {}", redirectUri);
 
       log.error(
           "구글 액세스 토큰 요청 실패 - code: {}, redirect_uri: {}, error: {}",
