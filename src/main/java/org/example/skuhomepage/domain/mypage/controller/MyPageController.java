@@ -1,6 +1,6 @@
 package org.example.skuhomepage.domain.mypage.controller;
 
-import org.example.skuhomepage.domain.mypage.dto.MyPageRequestDTO.signupRequestDTO;
+import org.example.skuhomepage.domain.mypage.dto.MyPageRequestDTO;
 import org.example.skuhomepage.domain.mypage.dto.MyPageResponseDTO;
 import org.example.skuhomepage.domain.mypage.dto.MyPageResponseDTO.MyPageInfoDTO;
 import org.example.skuhomepage.domain.mypage.service.MyPageService;
@@ -9,7 +9,9 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.RestController;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @RequiredArgsConstructor
 @RestController
 public class MyPageController implements MyPageControllerSpec {
@@ -19,14 +21,14 @@ public class MyPageController implements MyPageControllerSpec {
   @Override
   public ApiResponse<MyPageInfoDTO> getMyInfo(UserDetails userDetails) {
     MyPageResponseDTO.MyPageInfoDTO result = mypageService.getMyInfo(userDetails);
-    return ApiResponse.onSuccess(
-        new MyPageInfoDTO("김서경", "예술대학", "디자인학부", "전공", "2021418008", "4학년", "재학"));
+    return ApiResponse.onSuccess(result);
   }
 
   @Override
-  public ApiResponse<Void> signUp(signupRequestDTO request, UserDetails userDetails) {
-    mypageService.signUp(userDetails, request);
-    return ApiResponse.onSuccess(null);
+  public ApiResponse<MyPageResponseDTO.signUpResultDTO> signUp(
+      MyPageRequestDTO.signupRequestDTO request, UserDetails userDetails) {
+    MyPageResponseDTO.signUpResultDTO result = mypageService.signUp(userDetails, request);
+    return ApiResponse.onSuccess(result);
   }
 
   @Override

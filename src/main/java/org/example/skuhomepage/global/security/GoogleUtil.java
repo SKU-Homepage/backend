@@ -66,11 +66,10 @@ public class GoogleUtil {
 
     HttpEntity<MultiValueMap<String, String>> requestEntity = new HttpEntity<>(params, headers);
 
-    
     ResponseEntity<String> response =
         restTemplate.exchange(GOOGLE_TOKEN_URL, HttpMethod.POST, requestEntity, String.class);
     log.info(response.getBody());
-    
+
     try {
 
       log.info("구글 토큰 값: {}", response.getBody());

@@ -7,6 +7,7 @@ import org.example.skuhomepage.domain.mypage.converter.UserConverter;
 import org.example.skuhomepage.domain.mypage.dto.MyPageRequestDTO;
 import org.example.skuhomepage.domain.mypage.dto.MyPageResponseDTO;
 import org.example.skuhomepage.domain.mypage.dto.MyPageResponseDTO.LoginResultDTO;
+import org.example.skuhomepage.domain.mypage.dto.MyPageResponseDTO.signUpResultDTO;
 import org.example.skuhomepage.domain.mypage.entity.User;
 import org.example.skuhomepage.domain.mypage.exception.MyPageErrorStatus;
 import org.example.skuhomepage.domain.mypage.repository.UserRepository;
@@ -31,11 +32,28 @@ public class MyPageService {
   private final JwtUtil jwtUtil;
 
   public MyPageResponseDTO.MyPageInfoDTO getMyInfo(UserDetails userDetails) {
-    return null;
+    User user =
+        userRepository
+            .findByAccount(userDetails.getUsername())
+            .orElseThrow(() -> new GeneralException(MyPageErrorStatus.USER_NOT_FOUND));
+    return UserConverter.toMyPageInfoDto(user);
   }
 
-  public void signUp(UserDetails userDetails, MyPageRequestDTO.signupRequestDTO request) {
-    return;
+  public signUpResultDTO signUp(
+      UserDetails userDetails, MyPageRequestDTO.signupRequestDTO request) {
+    User user =
+        userRepository
+            .findByAccount(userDetails.getUsername())
+            .orElseThrow(() -> new GeneralException(MyPageErrorStatus.USER_NOT_FOUND));
+    user.updateUserInfo(
+        request.getCollege(),
+        request.getDepartment(),
+        request.getMajor(),
+        request.getStudentNumber(),
+        request.getGrade(),
+        request.isAgreement());
+    userRepository.save(user);
+    return new MyPageResponseDTO.signUpResultDTO(user.getId());
   }
 
   public MyPageResponseDTO.LoginResultDTO googleLogin(String code, int env) {
