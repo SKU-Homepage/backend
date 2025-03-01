@@ -2,8 +2,6 @@ package org.example.skuhomepage.domain.mypage.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -25,7 +23,7 @@ public class User extends BaseTimeEntity {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private Long Id;
+  private Long id;
 
   @Column(nullable = false)
   private String password;
@@ -33,22 +31,39 @@ public class User extends BaseTimeEntity {
   @Column(nullable = false)
   private String name;
 
-  @Enumerated(EnumType.STRING)
-  private CollegeType college;
+  @Column(nullable = false)
+  private String college;
 
-  @Enumerated(EnumType.STRING)
-  private DepartmentType department;
+  @Column(nullable = false)
+  private String department;
 
-  @Enumerated(EnumType.STRING)
-  private MajorType major;
+  @Column(nullable = false)
+  private String major;
 
+  @Column(nullable = false)
   private String studentNumber;
 
+  @Column(nullable = false)
   private String grade;
-
-  @Enumerated(EnumType.STRING)
-  private StatusType status;
 
   @Column(nullable = false)
   private String account;
+
+  @Column(nullable = false)
+  private boolean agreement;
+
+  public void updateUserInfo(
+      String college,
+      String department,
+      String major,
+      String studentNumber,
+      String grade,
+      boolean agreement) {
+    this.college = college;
+    this.department = department;
+    this.major = major;
+    this.studentNumber = studentNumber;
+    this.grade = grade;
+    this.agreement = agreement;
+  }
 }
