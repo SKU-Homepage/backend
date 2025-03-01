@@ -13,8 +13,7 @@ public class MyPageResponseDTO {
       @Schema(description = "학부", example = "디자인학부") String department,
       @Schema(description = "전공", example = "전공") String major,
       @Schema(description = "학번", example = "2021418008") String studentNumber,
-      @Schema(description = "학년", example = "4학년") String grade,
-      @Schema(description = "재학상태", example = "재학") String status) {}
+      @Schema(description = "학년", example = "4학년") String grade) {}
 
   public record LoginResultDTO(
       @Schema(description = "memberId", example = "1") Long memberId,
@@ -31,4 +30,6 @@ public class MyPageResponseDTO {
       return new LoginResultDTO(user.getId(), user.getAccount(), accessToken, LocalDateTime.now());
     }
   }
+
+  public record signUpResultDTO(@Schema(description = "회원 id", example = "1") Long memberId) {}
 }
