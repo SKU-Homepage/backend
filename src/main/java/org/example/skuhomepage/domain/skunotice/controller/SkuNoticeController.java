@@ -172,7 +172,7 @@ public class SkuNoticeController implements SkuNoticeControllerSpec {
                             .thumbnail(
                                 "https://www.skuniv.ac.kr/files/attach/images/78/483/264/544708c83dfa0a60691028d28911af79.jpg")
                             .department("진로취업지원센터")
-                            .date(java.time.LocalDate.of(2025, 1, 22))
+                            .date(java.time.LocalDateTime.of(2025, 1, 22, 0, 0))
                             .build(),
                         SkuNoticeResponseDTO.EcNoticeDTO.builder()
                             .id(264265L)
@@ -182,7 +182,7 @@ public class SkuNoticeController implements SkuNoticeControllerSpec {
                             .thumbnail(
                                 "https://www.skuniv.ac.kr/files/attach/images/78/265/264/e0da85ff9ca27e3c7a182966786219bd.jpg")
                             .department("현장실습지원센터")
-                            .date(java.time.LocalDate.of(2025, 1, 20))
+                            .date(java.time.LocalDateTime.of(2025, 1, 20, 0, 0))
                             .build())
                     : List.of(
                         SkuNoticeResponseDTO.EcNoticeDTO.builder()
@@ -193,7 +193,7 @@ public class SkuNoticeController implements SkuNoticeControllerSpec {
                             .thumbnail(
                                 "https://www.skuniv.ac.kr/files/attach/images/78/265/264/e0da85ff9ca27e3c7a182966786219bd.jpg")
                             .department("현장실습지원센터")
-                            .date(java.time.LocalDate.of(2025, 1, 20))
+                            .date(java.time.LocalDateTime.of(2025, 1, 20, 0, 0))
                             .build(),
                         SkuNoticeResponseDTO.EcNoticeDTO.builder()
                             .id(264483L)
@@ -203,7 +203,7 @@ public class SkuNoticeController implements SkuNoticeControllerSpec {
                             .thumbnail(
                                 "https://www.skuniv.ac.kr/files/attach/images/78/483/264/544708c83dfa0a60691028d28911af79.jpg")
                             .department("진로취업지원센터")
-                            .date(java.time.LocalDate.of(2025, 1, 22))
+                            .date(java.time.LocalDateTime.of(2025, 1, 22, 0, 0))
                             .build()))
             .build());
   }
