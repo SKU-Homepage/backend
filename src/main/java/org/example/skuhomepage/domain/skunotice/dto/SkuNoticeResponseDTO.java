@@ -80,7 +80,7 @@ public class SkuNoticeResponseDTO {
     private String department;
 
     @Schema(description = "공지사항 날짜", example = "2025.01.08")
-    private LocalDate date;
+    private LocalDateTime date;
   }
 
   @Getter

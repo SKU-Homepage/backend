@@ -1,16 +1,23 @@
 package org.example.skuhomepage.global.config;
 
+import java.time.Duration;
+
 import org.example.skuhomepage.global.listener.RedisExpireListener;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.autoconfigure.data.redis.RedisProperties;
+import org.springframework.cache.CacheManager;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.data.redis.cache.RedisCacheConfiguration;
+import org.springframework.data.redis.cache.RedisCacheManager;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.connection.RedisStandaloneConfiguration;
 import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.listener.ChannelTopic;
 import org.springframework.data.redis.listener.RedisMessageListenerContainer;
+import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSerializer;
+import org.springframework.data.redis.serializer.RedisSerializationContext;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
 
 import lombok.RequiredArgsConstructor;
@@ -62,5 +69,23 @@ public class RedisConfig {
       container.start();
       log.info("Redis Expire Listener 등록 완료");
     };
+  }
+
+  @Bean
+  public CacheManager cacheManager() {
+    RedisCacheConfiguration cacheConfiguration =
+        RedisCacheConfiguration.defaultCacheConfig()
+            .serializeKeysWith(
+                RedisSerializationContext.SerializationPair.fromSerializer(
+                    new StringRedisSerializer()))
+            .serializeValuesWith(
+                RedisSerializationContext.SerializationPair.fromSerializer(
+                    new GenericJackson2JsonRedisSerializer()))
+            .entryTtl(Duration.ofMinutes(1L));
+
+    return RedisCacheManager.RedisCacheManagerBuilder.fromConnectionFactory(
+            redisConnectionFactory())
+        .cacheDefaults(cacheConfiguration)
+        .build();
   }
 }
