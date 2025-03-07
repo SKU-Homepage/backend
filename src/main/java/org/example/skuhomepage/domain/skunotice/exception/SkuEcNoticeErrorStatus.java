@@ -10,7 +10,7 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 public enum SkuEcNoticeErrorStatus implements BaseErrorCode {
-  EC_NOTICE_API_CALL_FAILURE(HttpStatus.NOT_FOUND, "ECNO500001", "비교과 공지사항 호출을 실패하였습니다.");
+  SKU_NOTICE_API_CALL_FAILURE(HttpStatus.NOT_FOUND, "ECNO500001", "비교과 공지사항 호출을 실패하였습니다.");
 
   private final HttpStatus httpStatus;
   private final String code;
