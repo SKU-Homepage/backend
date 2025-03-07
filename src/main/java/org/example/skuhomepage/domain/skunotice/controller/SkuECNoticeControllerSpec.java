@@ -8,6 +8,7 @@ import org.example.skuhomepage.global.apiPayload.ApiResponse;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
@@ -31,11 +32,15 @@ public interface SkuECNoticeControllerSpec {
           Integer page,
       @Parameter(description = "키워드", example = "교수학습원")
           @RequestParam(value = "search_keyword", required = false, defaultValue = "all")
-      ECNoticeType searchKeyword,
+          ECNoticeType searchKeyword,
       @Parameter(description = "정렬 방식", example = "sort_index")
           @RequestParam(value = "sort_index", required = false, defaultValue = "view_count")
           String sortIndex,
       @Parameter(description = "정렬 순서", example = "desc")
           @RequestParam(value = "order_type", required = false, defaultValue = "desc")
           String orderType);
+
+  @Operation(summary = "공지사항 전체 저장", description = "공지사항을 전체 저장하는 api")
+  @PostMapping
+  ApiResponse<Void> saveSkuEcNotice();
 }
