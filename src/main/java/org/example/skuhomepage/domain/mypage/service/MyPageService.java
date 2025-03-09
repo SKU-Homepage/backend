@@ -45,13 +45,19 @@ public class MyPageService {
         userRepository
             .findByAccount(userDetails.getUsername())
             .orElseThrow(() -> new GeneralException(MyPageErrorStatus.USER_NOT_FOUND));
+
+    if (userRepository.existsByStudentNumber(request.getStudentNumber())) {
+      throw new GeneralException(MyPageErrorStatus.DUPLICATE_STUDENT_NUMBER);
+    }
     user.updateUserInfo(
         request.getCollege(),
         request.getDepartment(),
         request.getMajor(),
         request.getStudentNumber(),
         request.getGrade(),
-        request.isAgreement());
+        request.isAgreement(),
+        true);
+
     userRepository.save(user);
     return new MyPageResponseDTO.signUpResultDTO(user.getId());
   }

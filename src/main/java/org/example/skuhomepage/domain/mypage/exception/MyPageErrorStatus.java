@@ -13,7 +13,8 @@ public enum MyPageErrorStatus implements BaseErrorCode {
   USER_NOT_FOUND(HttpStatus.NOT_FOUND, "MYPAGE404001", "사용자를 찾을 수 없습니다."),
   EMAIL_NOT_VALID(HttpStatus.BAD_REQUEST, "MYPAGE400001", "이메일 형식이 skuniv가 아닙니다"),
   TYPE_NOT_VALID(HttpStatus.BAD_REQUEST, "MYPAGE400002", "타입이 올바르지 않습니다"),
-  TYPE_NOT_FOUND(HttpStatus.BAD_REQUEST, "MYPAGE400003", "타입을 찾을 수 없습니다");
+  TYPE_NOT_FOUND(HttpStatus.BAD_REQUEST, "MYPAGE400003", "타입을 찾을 수 없습니다"),
+  DUPLICATE_STUDENT_NUMBER(HttpStatus.BAD_REQUEST, "MYPAGE400004", "중복된 학번입니다");
 
   private final HttpStatus httpStatus;
   private final String code;

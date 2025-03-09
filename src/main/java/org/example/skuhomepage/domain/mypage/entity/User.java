@@ -52,18 +52,23 @@ public class User extends BaseTimeEntity {
   @Column(nullable = false)
   private boolean agreement;
 
+  @Column(nullable = false)
+  private boolean registered;
+
   public void updateUserInfo(
       String college,
       String department,
       String major,
       String studentNumber,
       String grade,
-      boolean agreement) {
+      boolean agreement,
+      boolean registered) {
     this.college = college;
     this.department = department;
     this.major = major;
     this.studentNumber = studentNumber;
     this.grade = grade;
     this.agreement = agreement;
+    this.registered = registered;
   }
 }

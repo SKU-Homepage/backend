@@ -24,10 +24,12 @@ public class MyPageResponseDTO {
                   "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJxd3MxNTY2QHNrdW5pdi5hYy5rciIsImV4cCI6MTY0NzQwNjYwNn0.7")
           String accessToken,
       @Schema(description = " createdAt", example = "2022-02-24T07:00:00.000+00:00")
-          LocalDateTime createdAt) {
+          LocalDateTime createdAt,
+      @Schema(description = "registered", example = "true") boolean registered) {
 
     public static LoginResultDTO from(User user, String accessToken) {
-      return new LoginResultDTO(user.getId(), user.getAccount(), accessToken, LocalDateTime.now());
+      return new LoginResultDTO(
+          user.getId(), user.getAccount(), accessToken, LocalDateTime.now(), user.isRegistered());
     }
   }
 
