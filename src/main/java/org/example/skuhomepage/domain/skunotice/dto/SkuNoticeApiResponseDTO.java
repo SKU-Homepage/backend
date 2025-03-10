@@ -39,7 +39,18 @@ public class SkuNoticeApiResponseDTO {
           .title(this.title)
           .url(this.url)
           .author(this.author)
-          .view_count(0)
+          .viewCount(0)
+          .build();
+    }
+
+    public SkuNoticeResponseDTO.NoticeDTO toDTO() {
+      return SkuNoticeResponseDTO.NoticeDTO.builder()
+          .id(Long.valueOf(this.id))
+          .title(this.title)
+          .url(this.url)
+          .department(this.author)
+          .date(LocalDateTime.parse(this.date))
+          .like(false)
           .build();
     }
   }

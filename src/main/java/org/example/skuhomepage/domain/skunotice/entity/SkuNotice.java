@@ -7,16 +7,10 @@ import java.util.List;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @Entity
 @Getter
@@ -25,9 +19,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class SkuNotice {
 
-  @Id
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private Long id;
+  @Id private Long id;
 
   @Column(nullable = false)
   private String category;
@@ -45,9 +37,10 @@ public class SkuNotice {
   private String author;
 
   @Column(nullable = false)
-  private int view_count;
+  @Setter
+  private int viewCount;
 
-  @Column(nullable = false)
+  @Column(columnDefinition = "TEXT")
   private String image;
 
   @Builder.Default
