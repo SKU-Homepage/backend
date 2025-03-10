@@ -3,9 +3,11 @@ package org.example.skuhomepage.domain.firebase.dto;
 import org.example.skuhomepage.global.enums.TopicGroup;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.Builder;
 import lombok.Getter;
 
 @Getter
+@Builder
 @Schema(description = "키워드 요청 DTO")
 public class TopicRequestDTO {
   @Schema(description = "키워드", example = "장학금")

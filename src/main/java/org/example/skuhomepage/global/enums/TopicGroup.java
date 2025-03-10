@@ -5,7 +5,7 @@ import lombok.Getter;
 @Getter
 public enum TopicGroup {
   SKU_NOTICE("skunotice"), // 학사 공지
-  SKU_EVENT("skuevent"), // 비교과 공지
+  SKU_EC_NOTICE("skuecnotice"), // 비교과 공지
   TIMETABLE("timetable"), // 시간표
   COMMON("common"), // 공통
   ;
