@@ -31,8 +31,4 @@ public class LikesService {
   public void getNoticeByLikesAndUser(Long userId) {
     likesRepository.findNoticeLikesByUser(userId);
   }
-
-  public void getECNoticeByLikesAndUser(Long userId) {
-    likesRepository.findECNoticeLikesByUser(userId);
-  }
 }

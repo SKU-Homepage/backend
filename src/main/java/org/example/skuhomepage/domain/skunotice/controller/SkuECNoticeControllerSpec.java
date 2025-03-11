@@ -41,6 +41,20 @@ public interface SkuECNoticeControllerSpec {
           @RequestParam(value = "sort_index", required = false, defaultValue = "DATE")
           SortIndex sortIndex);
 
+  @Operation(summary = "찜한 비교과 공지사항 조회하기", description = "찜한 비교과 공지사항을 조회하는 api")
+  @ApiErrorCodeExample(SkuNoticeErrorStatus.class)
+  @GetMapping("/likes")
+  ApiResponse<SkuNoticeResponseDTO.EcNoticeListDTO> getLikedSkuEcNotice(
+      @Parameter(name = "userDetails", description = "인증된 사용자 정보", hidden = true)
+          @AuthenticationPrincipal
+          CustomUserDetails userDetails,
+      @Parameter(description = "페이지", example = "0")
+          @RequestParam(value = "page", defaultValue = "0")
+          int page,
+      @Parameter(description = "작성자", example = "ALL")
+          @RequestParam(value = "author", required = false, defaultValue = "ALL")
+          ECNoticeType author);
+
   @Operation(summary = "공지사항 조회수 증가", description = "공지사항 조회수를 증가하는 api")
   @PatchMapping("/{ecNoticeId}/view-count")
   ApiResponse<Void> increaseViewCount(
