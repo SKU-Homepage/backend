@@ -31,32 +31,23 @@ public class SkuECNoticeService {
     Pageable pageable = PageRequest.of(page, 10, Sort.by(Sort.Order.desc("date")));
 
     Pageable pageableByViewCount =
-        PageRequest.of(0, 10, Sort.by(Sort.Order.desc("date"), Sort.Order.desc("viewCount")));
+        PageRequest.of(page, 10, Sort.by(Sort.Order.desc("view_count"), Sort.Order.desc("date")));
 
     Pageable pageableByLikeCount =
-        PageRequest.of(0, 10, Sort.by(Sort.Order.desc("date"), Sort.Order.desc("likes.size")));
+        PageRequest.of(page, 10, Sort.by(Sort.Order.desc("like_count"), Sort.Order.desc("date")));
 
-    // ALL일 때도 모든 author를 포함하는 리스트를 사용
     List<String> authors =
         List.of(
             ECNoticeType.GYOSU_HAKSEUB.getValue(),
             ECNoticeType.JINLO_CHWIEOB.getValue(),
             ECNoticeType.DAEHAK_HYEOKSIN.getValue());
 
-    // 특정 타입이면 해당 author만 포함
     if (ecNoticeType != ECNoticeType.ALL) {
       authors = List.of(ecNoticeType.getValue());
     }
 
-    // 정렬 방식에 따라 다른 메서드 호출
     List<SkuNoticeResponseDTO.EcNoticeDTO> noticeList =
         switch (sortIndex) {
-          case DATE -> skuNoticeRepository
-              .findAllECNoticesByTitleOrderByDate(searchKeyword, authors, pageable)
-              .stream()
-              .map(notice -> mapToDTO(notice, userId))
-              .collect(Collectors.toList());
-
           case VIEW_COUNT -> skuNoticeRepository
               .findAllECNoticesByTitleOrderByViewCount(searchKeyword, authors, pageableByViewCount)
               .stream()
@@ -65,6 +56,12 @@ public class SkuECNoticeService {
 
           case LIKE_COUNT -> skuNoticeRepository
               .findAllECNoticesByTitleOrderByLikeCount(searchKeyword, authors, pageableByLikeCount)
+              .stream()
+              .map(notice -> mapToDTO(notice, userId))
+              .collect(Collectors.toList());
+
+          default -> skuNoticeRepository
+              .findAllECNoticesByTitleOrderByDate(searchKeyword, authors, pageable)
               .stream()
               .map(notice -> mapToDTO(notice, userId))
               .collect(Collectors.toList());
