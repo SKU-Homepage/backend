@@ -70,6 +70,27 @@ public class SkuECNoticeService {
     return SkuNoticeResponseDTO.EcNoticeListDTO.builder().ecNoticeList(noticeList).build();
   }
 
+  public SkuNoticeResponseDTO.EcNoticeListDTO getLikedEcNoticeList(
+      ECNoticeType ecNoticeType, Long userId, int page) {
+    Pageable pageable = PageRequest.of(page, 10);
+    List<String> authors =
+        List.of(
+            ECNoticeType.GYOSU_HAKSEUB.getValue(),
+            ECNoticeType.JINLO_CHWIEOB.getValue(),
+            ECNoticeType.DAEHAK_HYEOKSIN.getValue());
+
+    if (ecNoticeType != ECNoticeType.ALL) {
+      authors = List.of(ecNoticeType.getValue());
+    }
+
+    List<SkuNoticeResponseDTO.EcNoticeDTO> noticeList =
+        likesRepository.findECNoticeLikesByUser(userId, authors, pageable).stream()
+            .map(notice -> mapToDTO(notice, userId))
+            .toList();
+
+    return SkuNoticeResponseDTO.EcNoticeListDTO.builder().ecNoticeList(noticeList).build();
+  }
+
   private SkuNoticeResponseDTO.EcNoticeDTO mapToDTO(SkuNotice notice, Long userId) {
     boolean isLiked = likesRepository.existsByUserIdAndSkuNotice(userId, notice);
     return SkuNoticeResponseDTO.EcNoticeDTO.from(notice, isLiked);

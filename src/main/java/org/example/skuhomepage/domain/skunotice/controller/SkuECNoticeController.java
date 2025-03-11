@@ -30,6 +30,14 @@ public class SkuECNoticeController implements SkuECNoticeControllerSpec {
   }
 
   @Override
+  public ApiResponse<SkuNoticeResponseDTO.EcNoticeListDTO> getLikedSkuEcNotice(
+      CustomUserDetails userDetails, int page, ECNoticeType author) {
+
+    return ApiResponse.onSuccess(
+        skuECNoticeService.getLikedEcNoticeList(author, userDetails.getUserId(), page));
+  }
+
+  @Override
   public ApiResponse<Void> increaseViewCount(Long ecNoticeId) {
 
     skuECNoticeService.increaseViewCount(ecNoticeId);
