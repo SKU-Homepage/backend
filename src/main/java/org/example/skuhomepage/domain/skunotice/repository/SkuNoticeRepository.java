@@ -14,8 +14,7 @@ public interface SkuNoticeRepository extends JpaRepository<SkuNotice, Long> {
   @Query(
       value =
           "SELECT * FROM sku_notice s WHERE s.author IN (:authors) "
-              + "AND (:title IS NULL OR :title = '' OR s.title LIKE CONCAT('%', :title, '%')) "
-              + "ORDER BY s.date DESC",
+              + "AND (:title IS NULL OR :title = '' OR s.title LIKE CONCAT('%', :title, '%')) ",
       nativeQuery = true)
   List<SkuNotice> findAllECNoticesByTitleOrderByDate(
       @Param("title") String title, @Param("authors") List<String> authors, Pageable pageable);
@@ -23,9 +22,8 @@ public interface SkuNoticeRepository extends JpaRepository<SkuNotice, Long> {
   // 조회수 기준 정렬
   @Query(
       value =
-          "SELECT * FROM SkuNotice s WHERE s.author IN (:authors) "
-              + "AND (:title IS NULL OR :title = '' OR s.title LIKE CONCAT('%', :title, '%')) "
-              + "ORDER BY s.date DESC, s.viewCount DESC",
+          "SELECT * FROM sku_notice s WHERE s.author IN (:authors) "
+              + "AND (:title IS NULL OR :title = '' OR s.title LIKE CONCAT('%', :title, '%')) ",
       nativeQuery = true)
   List<SkuNotice> findAllECNoticesByTitleOrderByViewCount(
       @Param("title") String title, @Param("authors") List<String> authors, Pageable pageable);
@@ -33,9 +31,10 @@ public interface SkuNoticeRepository extends JpaRepository<SkuNotice, Long> {
   // 좋아요 수 기준 정렬
   @Query(
       value =
-          "SELECT * FROM SkuNotice s LEFT JOIN s.likes l WHERE s.author IN (:authors) "
+          "SELECT s.*, COUNT(l.id) as like_count FROM sku_notice s LEFT JOIN likes l ON s.id = l.notice_id "
+              + "WHERE s.author IN (:authors) "
               + "AND (:title IS NULL OR :title = '' OR s.title LIKE CONCAT('%', :title, '%')) "
-              + "GROUP BY s ORDER BY s.date DESC, COUNT(l) DESC",
+              + "GROUP BY s.id",
       nativeQuery = true)
   List<SkuNotice> findAllECNoticesByTitleOrderByLikeCount(
       @Param("title") String title, @Param("authors") List<String> authors, Pageable pageable);

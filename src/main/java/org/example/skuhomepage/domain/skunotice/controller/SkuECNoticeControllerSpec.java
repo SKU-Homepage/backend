@@ -28,11 +28,11 @@ public interface SkuECNoticeControllerSpec {
       @Parameter(name = "userDetails", description = "인증된 사용자 정보", hidden = true)
           @AuthenticationPrincipal
           CustomUserDetails userDetails,
-      @Parameter(description = "페이지", example = "1")
-          @RequestParam(value = "page", defaultValue = "1")
+      @Parameter(description = "페이지", example = "0")
+          @RequestParam(value = "page", defaultValue = "0")
           int page,
       @Parameter(description = "키워드", example = "제목 검색")
-          @RequestParam(value = "search_keyword", required = false, defaultValue = "all")
+          @RequestParam(value = "search_keyword", required = false)
           String searchKeyword,
       @Parameter(description = "작성자", example = "ALL")
           @RequestParam(value = "author", required = false, defaultValue = "ALL")
