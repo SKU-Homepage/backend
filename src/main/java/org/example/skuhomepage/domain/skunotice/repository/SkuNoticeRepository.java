@@ -3,6 +3,7 @@ package org.example.skuhomepage.domain.skunotice.repository;
 import java.util.List;
 
 import org.example.skuhomepage.domain.skunotice.entity.SkuNotice;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -38,4 +39,8 @@ public interface SkuNoticeRepository extends JpaRepository<SkuNotice, Long> {
       nativeQuery = true)
   List<SkuNotice> findAllECNoticesByTitleOrderByLikeCount(
       @Param("title") String title, @Param("authors") List<String> authors, Pageable pageable);
+
+  // 공지사항 검색
+  @Query("SELECT n FROM SkuNotice n WHERE n.title LIKE %:keyword%")
+  Page<SkuNotice> findByKeyword(@Param("keyword") String keyword, Pageable pageable);
 }

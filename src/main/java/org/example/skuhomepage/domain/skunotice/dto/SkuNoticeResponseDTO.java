@@ -17,25 +17,48 @@ public class SkuNoticeResponseDTO {
 
   @Getter
   @Builder
-  @Schema(title = "Notice : 공지사항 DTO")
-  public static class NoticeDTO {
+  @Schema(title = "SkuNotice : 공지사항 DTO")
+  public static class SkuNoticeDTO {
     @Schema(description = "공지사항 ID", example = "264265")
     private Long id;
 
-    @Schema(description = "공지사항 제목", example = "2024 콘텐츠 인사이트:상상은 현실이 된다")
+    @Schema(description = "공지사항 카테고리", example = "학사")
+    private String category;
+
+    @Schema(description = "공지사항 날짜", example = "2025.01.08")
+    private LocalDateTime date;
+
+    @Schema(description = "공지사항 제목", example = "자기성장 프로그램")
     private String title;
 
     @Schema(description = "공지사항 URL", example = "https://skuNotice.com")
     private String url;
 
-    @Schema(description = "공지사항 발행기관", example = "교수학습원")
-    private String department;
+    @Schema(description = "작성자", example = "교수학습원")
+    private String author;
 
-    @Schema(description = "공지사항 날짜", example = "2025.01.08")
-    private LocalDateTime date;
+    @Schema(description = "공지사항 조회수", example = "100")
+    private int viewCount;
+
+    @Schema(description = "공지사항 사진", example = "https://skuNoticeImage.com")
+    private String image;
 
     @Schema(description = "공지사항 좋아요", example = "true")
     private boolean like;
+
+    public static SkuNoticeDTO from(SkuNotice skuNotice, boolean isLiked) {
+      return SkuNoticeDTO.builder()
+          .id(skuNotice.getId())
+          .title(skuNotice.getTitle())
+          .author(skuNotice.getAuthor())
+          .url(skuNotice.getUrl())
+          .image(skuNotice.getImage())
+          .category(skuNotice.getCategory())
+          .date(skuNotice.getDate())
+          .viewCount(skuNotice.getViewCount())
+          .like(isLiked)
+          .build();
+    }
 
     public MessageRequest toMessageRequest() {
 
@@ -45,7 +68,7 @@ public class SkuNoticeResponseDTO {
           .contentUrl(url)
           .inAppLink(
               "/"
-                  + switch (department) {
+                  + switch (author) {
                     case "교수학습원", "진로취업지원센터", "대학혁신지원사업단" -> "ecnotice";
                     default -> "notice";
                   }
@@ -59,13 +82,13 @@ public class SkuNoticeResponseDTO {
   @Getter
   @Builder
   @Schema(title = "Notice : 공지사항 리스트 DTO")
-  public static class NoticeListDTO {
+  public static class SkuNoticeListDTO {
     @JsonInclude(JsonInclude.Include.NON_NULL)
     @Schema(description = "조회 기준 시간", example = "2025-02-12T10:00:00")
     private LocalDateTime timestamp;
 
     @Schema(description = "전체 공지사항 리스트")
-    List<NoticeDTO> noticeList;
+    List<SkuNoticeDTO> skuNoticeList;
   }
 
   @Getter
@@ -99,8 +122,8 @@ public class SkuNoticeResponseDTO {
     @Schema(description = "공지사항 사진", example = "https://skuNoticeImage.com")
     private String thumbnail;
 
-    @Schema(description = "공지사항 발행기관", example = "대학혁신지원사업단")
-    private String department;
+    @Schema(description = "공지사항 카테고리", example = "학사")
+    private String category;
 
     @Schema(description = "공지사항 날짜", example = "2025.01.08")
     private LocalDateTime date;
@@ -118,7 +141,7 @@ public class SkuNoticeResponseDTO {
           .author(skuNotice.getAuthor())
           .url(skuNotice.getUrl())
           .thumbnail(skuNotice.getImage())
-          .department(skuNotice.getCategory())
+          .category(skuNotice.getCategory())
           .date(skuNotice.getDate())
           .like(isLiked)
           .viewCount(skuNotice.getViewCount())

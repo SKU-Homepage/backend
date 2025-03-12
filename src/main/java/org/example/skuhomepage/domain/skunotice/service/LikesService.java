@@ -4,6 +4,7 @@ import org.example.skuhomepage.domain.mypage.repository.UserRepository;
 import org.example.skuhomepage.domain.skunotice.entity.Likes;
 import org.example.skuhomepage.domain.skunotice.repository.LikesRepository;
 import org.example.skuhomepage.domain.skunotice.repository.SkuNoticeRepository;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;
@@ -29,6 +30,6 @@ public class LikesService {
   }
 
   public void getNoticeByLikesAndUser(Long userId) {
-    likesRepository.findNoticeLikesByUser(userId);
+    likesRepository.findNoticeLikesByUser(userId, Pageable.unpaged());
   }
 }
