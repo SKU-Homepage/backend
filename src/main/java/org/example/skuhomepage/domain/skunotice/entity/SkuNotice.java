@@ -1,16 +1,22 @@
 package org.example.skuhomepage.domain.skunotice.entity;
 
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-
 import jakarta.persistence.CascadeType;
+import jakarta.persistence.OneToMany;
+import java.time.LocalDateTime;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
 
-import lombok.*;
+import java.util.ArrayList;
+import java.util.List;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Getter
@@ -19,7 +25,9 @@ import lombok.*;
 @AllArgsConstructor
 public class SkuNotice {
 
-  @Id private Long id;
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  private Long id;
 
   @Column(nullable = false)
   private String category;
@@ -37,13 +45,12 @@ public class SkuNotice {
   private String author;
 
   @Column(nullable = false)
-  @Setter
-  private int viewCount;
+  private int view_count;
 
-  @Column(columnDefinition = "TEXT")
+  @Column(nullable = false)
   private String image;
 
-  @Builder.Default
-  @OneToMany(mappedBy = "skuNotice", cascade = CascadeType.ALL)
+  @OneToMany(mappedBy = "notice", cascade = CascadeType.ALL)
   private List<Likes> likes = new ArrayList<>();
+
 }
