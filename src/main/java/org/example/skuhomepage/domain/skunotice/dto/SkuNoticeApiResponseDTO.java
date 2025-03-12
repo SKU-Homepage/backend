@@ -3,6 +3,8 @@ package org.example.skuhomepage.domain.skunotice.dto;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import org.example.skuhomepage.domain.skunotice.dto.SkuNoticeResponseDTO.SkuNoticeDTO;
+
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import lombok.Builder;
@@ -29,12 +31,12 @@ public class SkuNoticeApiResponseDTO {
 
     private String image;
 
-    public SkuNoticeResponseDTO.NoticeDTO toDTO() {
-      return SkuNoticeResponseDTO.NoticeDTO.builder()
+    public SkuNoticeDTO toDTO() {
+      return SkuNoticeDTO.builder()
           .id(Long.valueOf(this.id))
           .title(this.title)
           .url(this.url)
-          .department(this.author)
+          .author(this.author)
           .date(LocalDateTime.parse(this.date))
           .like(false)
           .build();

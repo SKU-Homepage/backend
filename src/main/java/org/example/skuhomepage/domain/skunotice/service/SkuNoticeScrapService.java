@@ -13,7 +13,8 @@ import org.example.skuhomepage.domain.firebase.repository.TopicRepository;
 import org.example.skuhomepage.domain.firebase.service.FCMService;
 import org.example.skuhomepage.domain.skunotice.dto.SkuNoticeApiResponseDTO;
 import org.example.skuhomepage.domain.skunotice.dto.SkuNoticeApiResponseDTO.SkuNoticeApiResponse;
-import org.example.skuhomepage.domain.skunotice.dto.SkuNoticeResponseDTO;
+import org.example.skuhomepage.domain.skunotice.dto.SkuNoticeResponseDTO.SkuNoticeDTO;
+import org.example.skuhomepage.domain.skunotice.dto.SkuNoticeResponseDTO.SkuNoticeListDTO;
 import org.example.skuhomepage.domain.skunotice.entity.SkuNotice;
 import org.example.skuhomepage.domain.skunotice.enums.ECNoticeType;
 import org.example.skuhomepage.domain.skunotice.exception.SkuEcNoticeErrorStatus;
@@ -75,10 +76,10 @@ public class SkuNoticeScrapService {
     return SkuNoticeApiResponseDTO.builder().responseList(response.getBody()).build();
   }
 
-  public SkuNoticeResponseDTO.NoticeListDTO save(int page) {
+  public SkuNoticeListDTO save(int page) {
     AtomicInteger newData = new AtomicInteger();
     AtomicInteger updateData = new AtomicInteger();
-    List<SkuNoticeResponseDTO.NoticeDTO> newNotices = new ArrayList<>();
+    List<SkuNoticeDTO> newNotices = new ArrayList<>();
     List<SkuNotice> pageNotices = new ArrayList<>();
 
     scrap(page, null)
@@ -112,7 +113,7 @@ public class SkuNoticeScrapService {
 
     log.info("{} 페이지 데이터 저장 완료, 새 데이터 수: {}, 이전 데이터 수: {}", page, newData.get(), updateData.get());
 
-    return SkuNoticeResponseDTO.NoticeListDTO.builder().noticeList(newNotices).build();
+    return SkuNoticeListDTO.builder().skuNoticeList(newNotices).build();
   }
 
   public void saveAll(int startPage, int endPage) {
@@ -125,22 +126,22 @@ public class SkuNoticeScrapService {
 
   @Scheduled(cron = "0 0/10 * * * ?") // 매 10분마다 실행
   public void saveNoticeTask() {
-    SkuNoticeResponseDTO.NoticeListDTO newNotices = save(1);
+    SkuNoticeListDTO newNotices = save(1);
 
-    if (newNotices.getNoticeList().isEmpty()) return;
+    if (newNotices.getSkuNoticeList().isEmpty()) return;
 
     List<String> ecNoticeTopics =
         topicRepository.findTopicsByTopicGroup(TopicGroup.SKU_EC_NOTICE.getValue());
     List<String> noticeTopics =
         topicRepository.findTopicsByTopicGroup(TopicGroup.SKU_NOTICE.getValue());
 
-    for (SkuNoticeResponseDTO.NoticeDTO notice : newNotices.getNoticeList()) {
+    for (SkuNoticeDTO notice : newNotices.getSkuNoticeList()) {
       TopicGroup topicGroup = TopicGroup.SKU_NOTICE;
-      if (notice.getDepartment().equals(ECNoticeType.GYOSU_HAKSEUB.getValue())
-          || notice.getDepartment().equals(ECNoticeType.DAEHAK_HYEOKSIN.getValue())
-          || notice.getDepartment().equals(ECNoticeType.JINLO_CHWIEOB.getValue())) {
+      if (notice.getAuthor().equals(ECNoticeType.GYOSU_HAKSEUB.getValue())
+          || notice.getAuthor().equals(ECNoticeType.DAEHAK_HYEOKSIN.getValue())
+          || notice.getAuthor().equals(ECNoticeType.JINLO_CHWIEOB.getValue())) {
         for (String topic : ecNoticeTopics) {
-          log.info("토픽 확인: {}, department: {}", topic, notice.getDepartment());
+          log.info("토픽 확인: {}, department: {}", topic, notice.getAuthor());
           if (notice.getTitle().contains(topic)) {
             fcmService.sendTopicMessage(
                 notice.toMessageRequest(),
@@ -149,7 +150,7 @@ public class SkuNoticeScrapService {
         }
       } else {
         for (String topic : noticeTopics) {
-          log.info("토픽 확인: {}, department: {}", topic, notice.getDepartment());
+          log.info("토픽 확인: {}, department: {}", topic, notice.getAuthor());
           if (notice.getTitle().contains(topic)) {
             fcmService.sendTopicMessage(
                 notice.toMessageRequest(),
