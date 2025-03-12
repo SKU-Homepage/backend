@@ -11,9 +11,11 @@ import org.example.skuhomepage.global.utils.RedisUtils;
 import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class FCMService {
 
   private final FirebaseUtils firebaseUtils;
@@ -21,15 +23,15 @@ public class FCMService {
   private final FCMTopicService fcmTopicService;
   private final NotificationSubscribeRepository notificationSubscribeRepository;
 
-  public void registerToken(TokenRequestDTO tokenReq) {
-    redisUtils.saveTokenWithExpiry(1L, tokenReq.getToken(), 60 * 60);
+  public void registerToken(TokenRequestDTO tokenReq, Long userId) {
+    redisUtils.saveTokenWithExpiry(userId, tokenReq.getToken(), 60 * 60);
 
     notificationSubscribeRepository
-        .findByUserId(1L)
+        .findByUserId(userId)
         .forEach(
-            notificationSubscribe -> {
-              firebaseUtils.topicSubscribe(notificationSubscribe.getTopic(), tokenReq.getToken());
-            });
+            notificationSubscribe ->
+                firebaseUtils.topicSubscribe(
+                    notificationSubscribe.getTopic(), tokenReq.getToken()));
   }
 
   public void sendTestMessage(TokenRequestDTO tokenReq) {
@@ -54,5 +56,19 @@ public class FCMService {
             .sendTime(LocalDateTime.now())
             .topic(fcmTopicService.topicCreator(topicReq.getTopicGroup(), topicReq.getKeyword()))
             .build());
+  }
+
+  public void sendTopicMessage(MessageRequest msgRequest, TopicRequestDTO topicReq) {
+    firebaseUtils.sendTopicMessage(
+        MessageRequest.builder()
+            .title(msgRequest.getTitle())
+            .content(msgRequest.getContent())
+            .contentUrl(msgRequest.getContentUrl())
+            .inAppLink(msgRequest.getInAppLink())
+            .sendTime(LocalDateTime.now())
+            .topic(fcmTopicService.topicCreator(topicReq.getTopicGroup(), topicReq.getKeyword()))
+            .build());
+
+    log.info("토픽 메시지 전송 완료: {}", msgRequest.getTopic());
   }
 }

@@ -2,6 +2,7 @@ package org.example.skuhomepage.domain.firebase.entity;
 
 import jakarta.persistence.*;
 
+import org.example.skuhomepage.domain.mypage.entity.User;
 import org.example.skuhomepage.global.common.BaseTimeEntity;
 
 import lombok.*;
@@ -26,5 +27,7 @@ public class NotificationSubscribe extends BaseTimeEntity {
   @Column(nullable = false)
   private String token;
 
-  private Long userId;
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "user_id")
+  private User user;
 }

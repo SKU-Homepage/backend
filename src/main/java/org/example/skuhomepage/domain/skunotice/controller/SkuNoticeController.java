@@ -1,5 +1,6 @@
 package org.example.skuhomepage.domain.skunotice.controller;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -38,7 +39,7 @@ public class SkuNoticeController implements SkuNoticeControllerSpec {
                             .url(
                                 "https://www.skuniv.ac.kr/index.php?mid=notice&document_srl=265308")
                             .department("교무처")
-                            .date(java.time.LocalDate.of(2025, 2, 12))
+                            .date(LocalDate.of(2025, 2, 12).atStartOfDay())
                             .like(true)
                             .build(),
                         SkuNoticeResponseDTO.NoticeDTO.builder()
@@ -47,7 +48,7 @@ public class SkuNoticeController implements SkuNoticeControllerSpec {
                             .url(
                                 "https://www.skuniv.ac.kr/index.php?mid=notice&document_srl=265296")
                             .department("학생처")
-                            .date(java.time.LocalDate.of(2025, 2, 11))
+                            .date(LocalDate.of(2025, 2, 11).atStartOfDay())
                             .like(false)
                             .build(),
                         SkuNoticeResponseDTO.NoticeDTO.builder()
@@ -56,7 +57,7 @@ public class SkuNoticeController implements SkuNoticeControllerSpec {
                             .url(
                                 "https://www.skuniv.ac.kr/index.php?mid=notice&document_srl=265294")
                             .department("학생처")
-                            .date(java.time.LocalDate.of(2025, 2, 11))
+                            .date(LocalDate.of(2025, 2, 11).atStartOfDay())
                             .like(true)
                             .build()))
                 .build()
@@ -87,7 +88,7 @@ public class SkuNoticeController implements SkuNoticeControllerSpec {
                             .url(
                                 "https://www.skuniv.ac.kr/index.php?mid=notice&document_srl=265308")
                             .department("교무처")
-                            .date(java.time.LocalDate.of(2025, 2, 12))
+                            .date(LocalDate.of(2025, 2, 12).atStartOfDay())
                             .like(true)
                             .build(),
                         SkuNoticeResponseDTO.NoticeDTO.builder()
@@ -96,7 +97,7 @@ public class SkuNoticeController implements SkuNoticeControllerSpec {
                             .url(
                                 "https://www.skuniv.ac.kr/index.php?mid=notice&document_srl=265294")
                             .department("학생처")
-                            .date(java.time.LocalDate.of(2025, 2, 11))
+                            .date(LocalDate.of(2025, 2, 11).atStartOfDay())
                             .like(true)
                             .build())
                     : List.of(
@@ -106,7 +107,7 @@ public class SkuNoticeController implements SkuNoticeControllerSpec {
                             .url(
                                 "https://www.skuniv.ac.kr/index.php?mid=notice&document_srl=265294")
                             .department("학생처")
-                            .date(java.time.LocalDate.of(2025, 2, 11))
+                            .date(LocalDate.of(2025, 2, 11).atStartOfDay())
                             .like(true)
                             .build(),
                         SkuNoticeResponseDTO.NoticeDTO.builder()
@@ -115,7 +116,7 @@ public class SkuNoticeController implements SkuNoticeControllerSpec {
                             .url(
                                 "https://www.skuniv.ac.kr/index.php?mid=notice&document_srl=265308")
                             .department("교무처")
-                            .date(java.time.LocalDate.of(2025, 2, 12))
+                            .date(LocalDate.of(2025, 2, 12).atStartOfDay())
                             .like(true)
                             .build()))
             .build());
@@ -172,7 +173,7 @@ public class SkuNoticeController implements SkuNoticeControllerSpec {
                             .thumbnail(
                                 "https://www.skuniv.ac.kr/files/attach/images/78/483/264/544708c83dfa0a60691028d28911af79.jpg")
                             .department("진로취업지원센터")
-                            .date(java.time.LocalDate.of(2025, 1, 22))
+                            .date(java.time.LocalDateTime.of(2025, 1, 22, 0, 0))
                             .build(),
                         SkuNoticeResponseDTO.EcNoticeDTO.builder()
                             .id(264265L)
@@ -182,7 +183,7 @@ public class SkuNoticeController implements SkuNoticeControllerSpec {
                             .thumbnail(
                                 "https://www.skuniv.ac.kr/files/attach/images/78/265/264/e0da85ff9ca27e3c7a182966786219bd.jpg")
                             .department("현장실습지원센터")
-                            .date(java.time.LocalDate.of(2025, 1, 20))
+                            .date(java.time.LocalDateTime.of(2025, 1, 20, 0, 0))
                             .build())
                     : List.of(
                         SkuNoticeResponseDTO.EcNoticeDTO.builder()
@@ -193,7 +194,7 @@ public class SkuNoticeController implements SkuNoticeControllerSpec {
                             .thumbnail(
                                 "https://www.skuniv.ac.kr/files/attach/images/78/265/264/e0da85ff9ca27e3c7a182966786219bd.jpg")
                             .department("현장실습지원센터")
-                            .date(java.time.LocalDate.of(2025, 1, 20))
+                            .date(java.time.LocalDateTime.of(2025, 1, 20, 0, 0))
                             .build(),
                         SkuNoticeResponseDTO.EcNoticeDTO.builder()
                             .id(264483L)
@@ -203,7 +204,7 @@ public class SkuNoticeController implements SkuNoticeControllerSpec {
                             .thumbnail(
                                 "https://www.skuniv.ac.kr/files/attach/images/78/483/264/544708c83dfa0a60691028d28911af79.jpg")
                             .department("진로취업지원센터")
-                            .date(java.time.LocalDate.of(2025, 1, 22))
+                            .date(java.time.LocalDateTime.of(2025, 1, 22, 0, 0))
                             .build()))
             .build());
   }

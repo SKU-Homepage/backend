@@ -1,8 +1,10 @@
 package org.example.skuhomepage.domain.skunotice.dto;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+
+import org.example.skuhomepage.domain.skunotice.entity.SkuNotice;
+import org.example.skuhomepage.global.dto.MessageRequest;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 
@@ -30,10 +32,28 @@ public class SkuNoticeResponseDTO {
     private String department;
 
     @Schema(description = "공지사항 날짜", example = "2025.01.08")
-    private LocalDate date;
+    private LocalDateTime date;
 
     @Schema(description = "공지사항 좋아요", example = "true")
     private boolean like;
+
+    public MessageRequest toMessageRequest() {
+
+      return MessageRequest.builder()
+          .title(title)
+          .content(title)
+          .contentUrl(url)
+          .inAppLink(
+              "/"
+                  + switch (department) {
+                    case "교수학습원", "진로취업지원센터", "대학혁신지원사업단" -> "ecnotice";
+                    default -> "notice";
+                  }
+                  + "/"
+                  + id)
+          .sendTime(LocalDateTime.now())
+          .build();
+    }
   }
 
   @Getter
@@ -45,7 +65,7 @@ public class SkuNoticeResponseDTO {
     private LocalDateTime timestamp;
 
     @Schema(description = "전체 공지사항 리스트")
-    List<SkuNoticeResponseDTO.NoticeDTO> noticeList;
+    List<NoticeDTO> noticeList;
   }
 
   @Getter
@@ -70,6 +90,9 @@ public class SkuNoticeResponseDTO {
     @Schema(description = "공지사항 제목", example = "자기성장 프로그램")
     private String title;
 
+    @Schema(description = "작성자", example = "교수학습원")
+    private String author;
+
     @Schema(description = "공지사항 URL", example = "https://skuNotice.com")
     private String url;
 
@@ -80,7 +103,27 @@ public class SkuNoticeResponseDTO {
     private String department;
 
     @Schema(description = "공지사항 날짜", example = "2025.01.08")
-    private LocalDate date;
+    private LocalDateTime date;
+
+    @Schema(description = "공지사항 좋아요", example = "true")
+    private boolean like;
+
+    @Schema(description = "공지사항 조회수", example = "100")
+    private int viewCount;
+
+    public static EcNoticeDTO from(SkuNotice skuNotice, boolean isLiked) {
+      return EcNoticeDTO.builder()
+          .id(skuNotice.getId())
+          .title(skuNotice.getTitle())
+          .author(skuNotice.getAuthor())
+          .url(skuNotice.getUrl())
+          .thumbnail(skuNotice.getImage())
+          .department(skuNotice.getCategory())
+          .date(skuNotice.getDate())
+          .like(isLiked)
+          .viewCount(skuNotice.getViewCount())
+          .build();
+    }
   }
 
   @Getter
@@ -88,6 +131,6 @@ public class SkuNoticeResponseDTO {
   @Schema(title = "Notice : 비교과 공지사항 리스트 DTO")
   public static class EcNoticeListDTO {
     @Schema(description = "비교과 공지사항 리스트")
-    List<SkuNoticeResponseDTO.EcNoticeDTO> ecNoticeList;
+    List<EcNoticeDTO> ecNoticeList;
   }
 }
