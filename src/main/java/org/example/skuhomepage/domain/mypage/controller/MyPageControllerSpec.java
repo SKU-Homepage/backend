@@ -43,4 +43,12 @@ public interface MyPageControllerSpec {
   ApiResponse<MyPageResponseDTO.LoginResultDTO> googleLogin(
       @RequestParam(name = "code") String code,
       @RequestParam(name = "env", required = false, defaultValue = "1") int env);
+
+  @Operation(summary = "회원가입 여부 조회", description = "회원가입 여부 정보 조회 api")
+  @ApiErrorCodeExample(MyPageErrorStatus.class)
+  @GetMapping("/registered")
+  ApiResponse<MyPageResponseDTO.RegisterDTO> registeredUsers(
+      @Parameter(name = "userDetails", description = "인증된 사용자 정보", hidden = true)
+          @AuthenticationPrincipal
+          UserDetails userDetails);
 }

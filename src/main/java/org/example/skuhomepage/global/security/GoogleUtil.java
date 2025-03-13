@@ -29,6 +29,9 @@ public class GoogleUtil {
   @Value("${google.deploy-redirect-uri}") // 배포용 리디렉트 URI
   private String deployRedirectUri;
 
+  @Value("${google.dev-redirect-uri}") // 개발 서버 리디렉트 URI
+  private String devRedirectUri;
+
   private static final String GOOGLE_TOKEN_URL = "https://oauth2.googleapis.com/token";
   private static final String GOOGLE_USER_INFO_URL =
       "https://www.googleapis.com/oauth2/v3/userinfo";
@@ -40,8 +43,10 @@ public class GoogleUtil {
       return localRedirectUri;
     } else if (env == 1) {
       return deployRedirectUri;
+    } else if (env == 2) {
+      return devRedirectUri;
     } else {
-      throw new IllegalArgumentException("잘못된 환경 값입니다. (0: 로컬, 1: 배포)");
+      throw new IllegalArgumentException("잘못된 환경 값입니다. (0: 로컬, 1: 배포, 2: 개발)");
     }
   }
 

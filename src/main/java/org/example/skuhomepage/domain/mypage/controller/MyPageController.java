@@ -36,4 +36,10 @@ public class MyPageController implements MyPageControllerSpec {
     MyPageResponseDTO.LoginResultDTO result = mypageService.googleLogin(code, env);
     return ApiResponse.onSuccess(result);
   }
+
+  @Override
+  public ApiResponse<MyPageResponseDTO.RegisterDTO> registeredUsers(UserDetails userDetails) {
+    MyPageResponseDTO.RegisterDTO result = mypageService.isRegistered(userDetails);
+    return ApiResponse.onSuccess(result);
+  }
 }

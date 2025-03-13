@@ -34,4 +34,10 @@ public class MyPageResponseDTO {
   }
 
   public record signUpResultDTO(@Schema(description = "회원 id", example = "1") Long memberId) {}
+
+  public record RegisterDTO(@Schema(description = "회원가입 여부", example = "true") boolean registered) {
+    public static RegisterDTO from(User user) {
+      return new RegisterDTO(user.isRegistered());
+    }
+  }
 }

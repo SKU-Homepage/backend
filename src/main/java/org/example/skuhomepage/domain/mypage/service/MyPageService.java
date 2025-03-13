@@ -36,6 +36,9 @@ public class MyPageService {
         userRepository
             .findByAccount(userDetails.getUsername())
             .orElseThrow(() -> new GeneralException(MyPageErrorStatus.USER_NOT_FOUND));
+    if (!user.isRegistered()) {
+      throw new GeneralException(MyPageErrorStatus.USER_NOT_REGISTERED);
+    }
     return UserConverter.toMyPageInfoDto(user);
   }
 
@@ -45,6 +48,9 @@ public class MyPageService {
         userRepository
             .findByAccount(userDetails.getUsername())
             .orElseThrow(() -> new GeneralException(MyPageErrorStatus.USER_NOT_FOUND));
+    if (user.isRegistered()) {
+      throw new GeneralException(MyPageErrorStatus.USER_ALREADY_REGISTERED);
+    }
 
     if (userRepository.existsByStudentNumber(request.getStudentNumber())) {
       throw new GeneralException(MyPageErrorStatus.DUPLICATE_STUDENT_NUMBER);
@@ -73,6 +79,14 @@ public class MyPageService {
     String token = jwtUtil.createAccessToken(UserConverter.toCustomUserInfoDto(user));
 
     return LoginResultDTO.from(user, token);
+  }
+
+  public MyPageResponseDTO.RegisterDTO isRegistered(UserDetails userDetails) {
+    User user =
+        userRepository
+            .findByAccount(userDetails.getUsername())
+            .orElseThrow(() -> new GeneralException(MyPageErrorStatus.USER_NOT_FOUND));
+    return MyPageResponseDTO.RegisterDTO.from(user);
   }
 
   private void validateSkunivEmail(String email) {

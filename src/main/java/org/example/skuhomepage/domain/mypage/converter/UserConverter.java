@@ -21,6 +21,7 @@ public class UserConverter {
         .college("")
         .department("")
         .password(passwordEncoder.encode("google"))
+        .registered(false)
         .build();
   }
 
