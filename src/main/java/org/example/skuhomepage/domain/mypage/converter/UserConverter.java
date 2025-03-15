@@ -8,7 +8,11 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 
 public class UserConverter {
   public static CustomUserInfoDto toCustomUserInfoDto(User user) {
-    return CustomUserInfoDto.builder().userId(user.getId()).account(user.getAccount()).build();
+    return CustomUserInfoDto.builder()
+        .userId(user.getId())
+        .account(user.getAccount())
+        .registered(user.isRegistered())
+        .build();
   }
 
   public static User toUser(GoogleDTO.UserInfo googleUser, PasswordEncoder passwordEncoder) {

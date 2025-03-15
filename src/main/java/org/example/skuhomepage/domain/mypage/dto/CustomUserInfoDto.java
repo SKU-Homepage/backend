@@ -13,4 +13,5 @@ public class CustomUserInfoDto {
   private Long userId;
   private String account;
   private String password;
+  @Getter private boolean registered;
 }
