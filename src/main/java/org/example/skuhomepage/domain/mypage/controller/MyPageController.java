@@ -32,7 +32,7 @@ public class MyPageController implements MyPageControllerSpec {
   }
 
   @Override
-  public ApiResponse<MyPageResponseDTO.LoginResultDTO> googleLogin(String code, int env) {
+  public ApiResponse<MyPageResponseDTO.LoginResultDTO> googleLogin(String code, String env) {
     MyPageResponseDTO.LoginResultDTO result = mypageService.googleLogin(code, env);
     return ApiResponse.onSuccess(result);
   }

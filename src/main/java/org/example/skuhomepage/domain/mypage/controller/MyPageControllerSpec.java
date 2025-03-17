@@ -42,7 +42,7 @@ public interface MyPageControllerSpec {
   @GetMapping("/oauth2/code/google")
   ApiResponse<MyPageResponseDTO.LoginResultDTO> googleLogin(
       @RequestParam(name = "code") String code,
-      @RequestParam(name = "env", required = false, defaultValue = "1") int env);
+      @RequestParam(name = "env", required = false, defaultValue = "1") String env);
 
   @Operation(summary = "회원가입 여부 조회", description = "회원가입 여부 정보 조회 api")
   @ApiErrorCodeExample(MyPageErrorStatus.class)

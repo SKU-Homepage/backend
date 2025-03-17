@@ -38,19 +38,16 @@ public class GoogleUtil {
 
   private final RestTemplate restTemplate = new RestTemplate();
 
-  public String getRedirectUri(int env) {
-    if (env == 0) {
-      return localRedirectUri;
-    } else if (env == 1) {
-      return deployRedirectUri;
-    } else if (env == 2) {
-      return devRedirectUri;
-    } else {
+  public String getRedirectUri(String env) {
+    if ("0".equals(env)) return localRedirectUri;
+    else if ("1".equals(env)) return deployRedirectUri;
+    else if ("2".equals(env)) return devRedirectUri;
+    else {
       throw new IllegalArgumentException("잘못된 환경 값입니다. (0: 로컬, 1: 배포, 2: 개발)");
     }
   }
 
-  public GoogleDTO.OAuthToken requestToken(String authorizationCode, int env) {
+  public GoogleDTO.OAuthToken requestToken(String authorizationCode, String env) {
     String redirectUri = getRedirectUri(env);
     HttpHeaders headers = new HttpHeaders();
     headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
