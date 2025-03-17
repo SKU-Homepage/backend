@@ -39,15 +39,15 @@ public class SwaggerConfig {
     return new OpenAPI()
         .addServersItem(localServer)
         //        .addServersItem(prodServer)
-        .addSecurityItem(new SecurityRequirement().addList("bearerAuth"))
+        .addSecurityItem(new SecurityRequirement().addList("cookieAuth"))
         .components(
             new Components()
                 .addSecuritySchemes(
-                    "bearerAuth",
+                    "cookieAuth",
                     new SecurityScheme()
-                        .type(SecurityScheme.Type.HTTP)
-                        .scheme("bearer")
-                        .bearerFormat("JWT")))
+                        .type(SecurityScheme.Type.APIKEY)
+                        .name("token")
+                        .in(SecurityScheme.In.COOKIE)))
         .info(new Info().title("틀딱즈 명세서").version("1.0").description("틀딱즈 Swagger"));
   }
 

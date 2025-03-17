@@ -2,6 +2,9 @@ package org.example.skuhomepage.domain.mypage.service;
 
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
+import java.time.Duration;
+
+import jakarta.servlet.http.HttpServletResponse;
 
 import org.example.skuhomepage.domain.mypage.converter.UserConverter;
 import org.example.skuhomepage.domain.mypage.dto.MyPageRequestDTO;
@@ -15,6 +18,9 @@ import org.example.skuhomepage.global.exception.GeneralException;
 import org.example.skuhomepage.global.security.GoogleDTO;
 import org.example.skuhomepage.global.security.GoogleUtil;
 import org.example.skuhomepage.global.security.JwtUtil;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseCookie;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -30,6 +36,9 @@ public class MyPageService {
   private final PasswordEncoder passwordEncoder;
   private final UserRepository userRepository;
   private final JwtUtil jwtUtil;
+
+  @Value("${cookie.secure}")
+  private boolean isSecure;
 
   public MyPageResponseDTO.MyPageInfoDTO getMyInfo(UserDetails userDetails) {
     User user =
@@ -68,7 +77,8 @@ public class MyPageService {
     return new MyPageResponseDTO.signUpResultDTO(user.getId());
   }
 
-  public MyPageResponseDTO.LoginResultDTO googleLogin(String code, String env) {
+  public MyPageResponseDTO.LoginResultDTO googleLogin(
+      String code, String env, HttpServletResponse response) {
     String decode = URLDecoder.decode(code, StandardCharsets.UTF_8);
     GoogleDTO.OAuthToken oAuthToken = googleUtil.requestToken(decode, env);
     GoogleDTO.UserInfo userInfo = googleUtil.requestUserInfo(oAuthToken.getAccess_token());
@@ -78,6 +88,16 @@ public class MyPageService {
     User user = findOrCreateUser(userInfo);
     String token = jwtUtil.createAccessToken(UserConverter.toCustomUserInfoDto(user));
 
+    ResponseCookie cookie =
+        ResponseCookie.from("token", token)
+            .httpOnly(true)
+            .secure(false)
+            .sameSite("None")
+            .path("/")
+            .maxAge(Duration.ofDays(7))
+            .build();
+
+    response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
     return LoginResultDTO.from(user, token);
   }
 

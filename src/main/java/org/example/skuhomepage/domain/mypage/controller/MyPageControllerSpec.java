@@ -1,5 +1,7 @@
 package org.example.skuhomepage.domain.mypage.controller;
 
+import jakarta.servlet.http.HttpServletResponse;
+
 import org.example.skuhomepage.domain.mypage.dto.MyPageRequestDTO;
 import org.example.skuhomepage.domain.mypage.dto.MyPageResponseDTO;
 import org.example.skuhomepage.domain.mypage.exception.MyPageErrorStatus;
@@ -42,7 +44,8 @@ public interface MyPageControllerSpec {
   @GetMapping("/oauth2/code/google")
   ApiResponse<MyPageResponseDTO.LoginResultDTO> googleLogin(
       @RequestParam(name = "code") String code,
-      @RequestParam(name = "env", required = false, defaultValue = "1") String env);
+      @RequestParam(name = "env", required = false, defaultValue = "1") String env,
+      HttpServletResponse response);
 
   @Operation(summary = "회원가입 여부 조회", description = "회원가입 여부 정보 조회 api")
   @ApiErrorCodeExample(MyPageErrorStatus.class)

@@ -1,5 +1,7 @@
 package org.example.skuhomepage.domain.mypage.controller;
 
+import jakarta.servlet.http.HttpServletResponse;
+
 import org.example.skuhomepage.domain.mypage.dto.MyPageRequestDTO;
 import org.example.skuhomepage.domain.mypage.dto.MyPageResponseDTO;
 import org.example.skuhomepage.domain.mypage.dto.MyPageResponseDTO.MyPageInfoDTO;
@@ -32,8 +34,9 @@ public class MyPageController implements MyPageControllerSpec {
   }
 
   @Override
-  public ApiResponse<MyPageResponseDTO.LoginResultDTO> googleLogin(String code, String env) {
-    MyPageResponseDTO.LoginResultDTO result = mypageService.googleLogin(code, env);
+  public ApiResponse<MyPageResponseDTO.LoginResultDTO> googleLogin(
+      String code, String env, HttpServletResponse response) {
+    MyPageResponseDTO.LoginResultDTO result = mypageService.googleLogin(code, env, response);
     return ApiResponse.onSuccess(result);
   }
 
