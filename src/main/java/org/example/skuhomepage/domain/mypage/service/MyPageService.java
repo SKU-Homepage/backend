@@ -91,7 +91,7 @@ public class MyPageService {
     ResponseCookie cookie =
         ResponseCookie.from("token", token)
             .httpOnly(true)
-            .secure(false)
+            .secure(isSecure)
             .sameSite("None")
             .path("/")
             .maxAge(Duration.ofDays(7))
