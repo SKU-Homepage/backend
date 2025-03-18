@@ -2,12 +2,15 @@ package org.example.skuhomepage.domain.timetable.dto;
 
 import java.util.List;
 
+import org.example.skuhomepage.domain.timetable.entity.Subject;
+
 import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 public class TimeTableResponseDTO {
 
   public record TodayTimeTableDTO(
+      @Schema(description = "id", example = "1") Long id,
       @Schema(description = "수업 시간", example = "1교시") // 크롤링 값에 따라 example 변경 될 수도 있음
           String time,
       @Schema(description = "수업 이름", example = "자료구조") String subject,
@@ -24,7 +27,9 @@ public class TimeTableResponseDTO {
       @ArraySchema(
               schema = @Schema(implementation = TimeTableDTO.class),
               arraySchema = @Schema(description = "과목 리스트"))
-          List<TimeTableDTO> timeTables) {}
+          List<TimeTableDTO> timeTables,
+      @Schema(description = "마지막 존재 여부", example = "true") boolean hasNext,
+      @Schema(description = "다음 페이지", example = "2") int nextPage) {}
 
   public record AddSubjectDTO(@Schema(description = "과목 id", example = "1") Long subjectId) {}
 
@@ -39,7 +44,20 @@ public class TimeTableResponseDTO {
       @Schema(description = "학점", example = "3") int credit,
       @Schema(description = "학년", example = "1") int grade,
       @Schema(description = "수강 대상", example = "컴퓨터공학과") String target,
-      @Schema(description = "구분", example = "전공") String division) {}
+      @Schema(description = "구분", example = "전공") String division) {
+    public TimeTableDTO(Subject subject) {
+      this(
+          subject.getId(),
+          subject.getSubject(),
+          subject.getProfessor(),
+          subject.getTime(),
+          subject.getClassroom(),
+          subject.getCredit(),
+          subject.getGrade(),
+          subject.getTarget(),
+          subject.getDivision() != null ? subject.getDivision().name() : null);
+    }
+  }
 
   public record MySubjectDTO(
       @Schema(description = "과목 id", example = "1") Long subjectId,
