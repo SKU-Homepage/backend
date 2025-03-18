@@ -13,10 +13,6 @@ public class TimeTableRequestDTO {
     private String subject;
 
     @NotBlank
-    @Schema(description = "교수 이름", example = "이지영")
-    private String professor;
-
-    @NotBlank
     @Schema(description = "수업 시간", example = "월 1교시")
     private String time;
 
