@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.*;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
 @Tag(name = "timetable-controller", description = "시간표 관련 API")
@@ -63,8 +62,7 @@ public interface TimeTableControllerSpec {
       @Parameter(name = "userDetails", description = "인증된 사용자 정보", hidden = true)
           @AuthenticationPrincipal
           UserDetails userDetails,
-      @Valid @RequestBody(description = "사용자가 직접 입력한 수업 정보", required = true)
-          TimeTableRequestDTO.selfSubjectDTO request);
+      @Valid @RequestBody TimeTableRequestDTO.selfSubjectDTO request);
 
   @DeleteMapping("/{subjectId}")
   @Operation(summary = "선택한 과목 내 시간표에서 삭제하기", description = "선택한 수업 내 시간표에서 삭제하기")

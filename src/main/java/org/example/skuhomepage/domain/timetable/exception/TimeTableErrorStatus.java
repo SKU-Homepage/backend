@@ -14,8 +14,8 @@ public enum TimeTableErrorStatus implements BaseErrorCode {
   DUPLICATE_SUBJECT(HttpStatus.BAD_REQUEST, "TIMETABLE4002", "이미 등록된 과목입니다."),
   SUBJECT_NOT_FOUND(HttpStatus.NOT_FOUND, "TIMETABLE4003", "과목을 찾을 수 없습니다."),
   INVALID_SUBJECT_ID(HttpStatus.BAD_REQUEST, "TIMETABLE4004", "과목 ID가 잘못되었습니다."),
-  SUBJECT_ALREADY_EXIST(HttpStatus.BAD_REQUEST, "TIMETABLE4005", "이미 등록된 과목입니다.");
-
+  SUBJECT_ALREADY_EXIST(HttpStatus.BAD_REQUEST, "TIMETABLE4005", "이미 등록된 과목입니다."),
+  TIMETABLE_NOT_FOUND(HttpStatus.NOT_FOUND, "TIMETABLE4006", "시간표가 존재하지 않습니다");
 
   private final HttpStatus httpStatus;
   private final String code;

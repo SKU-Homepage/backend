@@ -10,6 +10,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 public class TimeTableResponseDTO {
 
   public record TodayTimeTableDTO(
+      @Schema(description = "id", example = "1") Long id,
       @Schema(description = "수업 시간", example = "1교시") // 크롤링 값에 따라 example 변경 될 수도 있음
           String time,
       @Schema(description = "수업 이름", example = "자료구조") String subject,
