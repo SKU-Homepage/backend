@@ -15,7 +15,8 @@ public class CorsConfig implements WebMvcConfigurer {
             "http://localhost:3000",
             "https://devsku.netlify.app",
             "https://www.skuniv.co.kr",
-            "http://localhost:8080")
+            "http://localhost:8080",
+            "https://api.skuniv.co.kr")
         .allowedMethods("GET", "POST", "PUT", "PATCH", "OPTIONS")
         .allowedHeaders("*")
         .allowCredentials(true)
