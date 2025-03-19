@@ -17,8 +17,9 @@ public class CorsConfig implements WebMvcConfigurer {
             "https://www.skuniv.co.kr",
             "http://localhost:8080")
         .allowedMethods("GET", "POST", "PUT", "PATCH", "OPTIONS")
-        .allowedHeaders("headers")
+        .allowedHeaders("*")
         .allowCredentials(true)
+        .exposedHeaders("Set-Cookie")
         .maxAge(3000);
   }
 }
