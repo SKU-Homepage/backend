@@ -40,6 +40,9 @@ public class MyPageService {
   @Value("${cookie.secure}")
   private boolean isSecure;
 
+  @Value("${cookie.sameSite}")
+  private String sameSite;
+
   public MyPageResponseDTO.MyPageInfoDTO getMyInfo(UserDetails userDetails) {
     User user =
         userRepository
@@ -91,8 +94,8 @@ public class MyPageService {
     ResponseCookie cookie =
         ResponseCookie.from("token", token)
             .httpOnly(true)
-            .secure(true)
-            .sameSite("None")
+            .secure(false)
+            .sameSite("Lax")
             .path("/")
             .maxAge(Duration.ofDays(7))
             .build();
