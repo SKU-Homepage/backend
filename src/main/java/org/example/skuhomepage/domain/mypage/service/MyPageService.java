@@ -97,7 +97,7 @@ public class MyPageService {
             .secure(true)
             .sameSite("None")
             .path("/")
-            .domain("skuniv.co.kr")
+            .domain(".skuniv.co.kr")
             .maxAge(Duration.ofDays(7))
             .build();
 
