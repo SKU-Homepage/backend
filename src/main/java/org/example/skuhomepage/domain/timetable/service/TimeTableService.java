@@ -139,9 +139,9 @@ public class TimeTableService {
                 .subject(request.getSubject())
                 .time(request.getTime())
                 .classroom(request.getClassroom())
-                .credit(0)
+                .credit("")
                 .professor("")
-                .grade(0)
+                .grade("")
                 .target("")
                 .division(SubjectType.자유선택)
                 .build());
@@ -175,6 +175,33 @@ public class TimeTableService {
             .orElseThrow(() -> new GeneralException(TimeTableErrorStatus.SUBJECT_NOT_FOUND));
     timeTableSubjectRepository.deleteById(timeTableSubject.getId());
     return new DeleteSubjectDTO(subjectId);
+  }
+
+  public TimeTableResponseDTO.MyTimeTableDTO getSubjectsByDay(
+      UserDetails userDetails, String dayOfWeek) {
+    DayOfWeek targetDay = DayOfWeek.valueOf(dayOfWeek.toUpperCase());
+
+    TimeTable myTimeTable =
+        timeTableRepository
+            .findByUser_Account(userDetails.getUsername())
+            .orElseThrow(() -> new GeneralException(TimeTableErrorStatus.TIME_TABLE_NOT_FOUND));
+
+    List<TimeTableSubject> mySubjects = timeTableSubjectRepository.findAllByTimeTable(myTimeTable);
+
+    List<TimeTableResponseDTO.MySubjectDTO> subjects =
+        mySubjects.stream()
+            .map(TimeTableSubject::getSubject)
+            .filter(subject -> isSubjectOnToday(subject, targetDay))
+            .map(
+                subject ->
+                    new TimeTableResponseDTO.MySubjectDTO(
+                        subject.getId(),
+                        subject.getSubject(),
+                        subject.getTime(),
+                        subject.getClassroom()))
+            .collect(Collectors.toList());
+
+    return new TimeTableResponseDTO.MyTimeTableDTO(subjects);
   }
 
   private boolean isSubjectOnToday(Subject subject, DayOfWeek today) {

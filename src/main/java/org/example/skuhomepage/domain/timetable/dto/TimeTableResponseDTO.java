@@ -41,8 +41,8 @@ public class TimeTableResponseDTO {
       @Schema(description = "교수 이름", example = "이지영") String professor,
       @Schema(description = "수업 시간", example = "월 1교시") String time,
       @Schema(description = "장소", example = "북악관 608호") String classroom,
-      @Schema(description = "학점", example = "3") int credit,
-      @Schema(description = "학년", example = "1") int grade,
+      @Schema(description = "학점", example = "3") String credit,
+      @Schema(description = "학년", example = "1") String grade,
       @Schema(description = "수강 대상", example = "컴퓨터공학과") String target,
       @Schema(description = "구분", example = "전공") String division) {
     public TimeTableDTO(Subject subject) {
