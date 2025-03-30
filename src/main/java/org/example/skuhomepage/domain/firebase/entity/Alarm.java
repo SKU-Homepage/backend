@@ -4,7 +4,6 @@ import jakarta.persistence.*;
 
 import org.example.skuhomepage.domain.mypage.entity.User;
 import org.example.skuhomepage.global.common.BaseTimeEntity;
-import org.example.skuhomepage.global.enums.TopicGroup;
 
 import lombok.*;
 
@@ -13,16 +12,22 @@ import lombok.*;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Builder
-@Table(uniqueConstraints = {@UniqueConstraint(columnNames = {"keyword", "topicGroup"})})
-public class UserKeyword extends BaseTimeEntity {
+public class Alarm extends BaseTimeEntity {
+
   @Id @GeneratedValue private Long id;
 
   @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(nullable = false)
   private User user;
 
   @Column(nullable = false)
-  private String keyword;
+  private String title;
 
-  @Column(nullable = false)
-  private TopicGroup topicGroup;
+  @Column(nullable = false, length = 500)
+  private String content;
+
+  @Enumerated(EnumType.STRING)
+  private NotificationType notificationType;
+
+  private String redirectUrl;
 }

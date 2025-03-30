@@ -1,5 +1,6 @@
 package org.example.skuhomepage.domain.firebase.controller;
 
+import org.example.skuhomepage.domain.firebase.dto.NotificationResponseDTO;
 import org.example.skuhomepage.domain.firebase.dto.TokenRequestDTO;
 import org.example.skuhomepage.domain.firebase.dto.TopicRequestDTO;
 import org.example.skuhomepage.global.apiPayload.ApiResponse;
@@ -28,6 +29,10 @@ public interface FCMControllerSpec {
   //  @Operation(summary = "테스트 토픽 알림 전송", description = "테스트 토픽 알림을 전송하는 API")
   //  ApiResponse<Void> sendTestTopicMessage(
   //      @RequestBody TopicRequestDTO req, @AuthenticationPrincipal CustomUserDetails userDetails);
+  @GetMapping("/alarm")
+  @Operation(summary = "알림 조회", description = "사용자가 받은 알림들 조회 api")
+  ApiResponse<NotificationResponseDTO.NotificationListDTO> getAlarmList(
+      @AuthenticationPrincipal CustomUserDetails userDetails);
 
   @PostMapping("/keyword")
   @Operation(summary = "키워드 등록", description = "키워드를 등록하는 API")
