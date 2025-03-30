@@ -24,6 +24,8 @@ import org.example.skuhomepage.domain.timetable.repository.SubjectRepository;
 import org.example.skuhomepage.domain.timetable.repository.TimeTableRepository;
 import org.example.skuhomepage.domain.timetable.repository.TimeTableSubjectRepository;
 import org.example.skuhomepage.global.exception.GeneralException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -208,6 +210,19 @@ public class TimeTableService {
             .collect(Collectors.toList());
 
     return new TimeTableResponseDTO.MyTimeTableDTO(subjects);
+  }
+
+  public TimeTableResponseDTO.TimeTableListDTO searchSubjects(String name) {
+    Pageable pageable = PageRequest.of(0, 10);
+    Page<Subject> subjectPage = subjectRepository.findBySubjectName(name, pageable);
+    List<TimeTableResponseDTO.TimeTableDTO> subjects =
+        subjectPage.getContent().stream()
+            .map(TimeTableResponseDTO.TimeTableDTO::new)
+            .collect(Collectors.toList());
+
+    boolean hasNext = subjectPage.hasNext();
+    int nextPage = hasNext ? subjectPage.getNumber() + 1 : subjectPage.getNumber();
+    return new TimeTableResponseDTO.TimeTableListDTO(subjects, hasNext, nextPage);
   }
 
   private boolean isSubjectOnToday(Subject subject, DayOfWeek today) {
