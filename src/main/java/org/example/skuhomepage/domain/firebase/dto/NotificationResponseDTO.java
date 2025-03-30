@@ -22,5 +22,7 @@ public class NotificationResponseDTO {
       @ArraySchema(
               schema = @Schema(implementation = UserKeyword.class),
               arraySchema = @Schema(description = "키워드 리스트"))
-          List<UserKeyword> userKeywordList) {}
+          List<UserKeywordDTO> userKeywordList) {}
+
+  public record UserKeywordDTO(@Schema(description = "키워드", example = "대학혁신") String name) {}
 }

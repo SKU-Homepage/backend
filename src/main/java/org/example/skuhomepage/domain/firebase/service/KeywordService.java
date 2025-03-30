@@ -3,6 +3,7 @@ package org.example.skuhomepage.domain.firebase.service;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.example.skuhomepage.domain.firebase.dto.NotificationResponseDTO;
 import org.example.skuhomepage.domain.firebase.dto.TopicRequestDTO;
 import org.example.skuhomepage.domain.firebase.entity.UserKeyword;
 import org.example.skuhomepage.domain.firebase.exception.FirebaseErrorStatus;
@@ -34,22 +35,31 @@ public class KeywordService {
       throw new GeneralException(FirebaseErrorStatus.KEYWORD_NOT_VALID);
     }
 
-    UserKeyword keyword = UserKeyword.builder().user(user).keyword(request.getKeyword()).build();
+    UserKeyword keyword =
+        UserKeyword.builder()
+            .user(user)
+            .keyword(request.getKeyword())
+            // .topicGroup(TopicGroup.COMMON)
+            .build();
 
     keywordRepository.save(keyword);
   }
 
-  public List<String> getUserKeywords(UserDetails userDetails) {
+  public NotificationResponseDTO.keywordDTO getUserKeywords(UserDetails userDetails) {
     User user =
         userRepository
             .findByAccount(userDetails.getUsername())
             .orElseThrow(() -> new GeneralException(MyPageErrorStatus.USER_NOT_FOUND));
 
     List<UserKeyword> keywords = keywordRepository.findAllByUser(user);
-    return keywords.stream().map(UserKeyword::getKeyword).collect(Collectors.toList());
+    List<NotificationResponseDTO.UserKeywordDTO> dtos =
+        keywords.stream()
+            .map(keyword -> new NotificationResponseDTO.UserKeywordDTO(keyword.getKeyword()))
+            .collect(Collectors.toList());
+    return new NotificationResponseDTO.keywordDTO(dtos);
   }
 
-  public void deleteKeyword(String keywordToDelete, UserDetails userDetails) {
+  public void deleteKeyword(Long keywordId, UserDetails userDetails) {
     User user =
         userRepository
             .findByAccount(userDetails.getUsername())
@@ -57,7 +67,7 @@ public class KeywordService {
 
     UserKeyword keyword =
         keywordRepository
-            .findByUserAndKeyword(user, keywordToDelete)
+            .findByUserAndKeywordId(user, keywordId)
             .orElseThrow(() -> new GeneralException(FirebaseErrorStatus.KEYWORD_NOT_FOUND));
 
     keywordRepository.delete(keyword);
