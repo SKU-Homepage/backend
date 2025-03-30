@@ -5,12 +5,17 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import org.example.skuhomepage.domain.firebase.dto.TopicRequestDTO;
-import org.example.skuhomepage.domain.firebase.repository.TopicRepository;
-import org.example.skuhomepage.domain.firebase.service.FCMService;
+import org.example.skuhomepage.domain.firebase.entity.UserDeviceToken;
+import org.example.skuhomepage.domain.firebase.entity.UserKeyword;
+import org.example.skuhomepage.domain.firebase.repository.UserDeviceTokenRepository;
+import org.example.skuhomepage.domain.firebase.repository.UserKeywordRepository;
+import org.example.skuhomepage.domain.firebase.service.NotificationService;
+import org.example.skuhomepage.domain.mypage.entity.User;
 import org.example.skuhomepage.domain.skunotice.dto.SkuNoticeApiResponseDTO;
 import org.example.skuhomepage.domain.skunotice.dto.SkuNoticeApiResponseDTO.SkuNoticeApiResponse;
 import org.example.skuhomepage.domain.skunotice.dto.SkuNoticeResponseDTO.SkuNoticeDTO;
@@ -19,7 +24,6 @@ import org.example.skuhomepage.domain.skunotice.entity.SkuNotice;
 import org.example.skuhomepage.domain.skunotice.enums.ECNoticeType;
 import org.example.skuhomepage.domain.skunotice.exception.SkuEcNoticeErrorStatus;
 import org.example.skuhomepage.domain.skunotice.repository.SkuNoticeRepository;
-import org.example.skuhomepage.global.enums.TopicGroup;
 import org.example.skuhomepage.global.exception.GeneralException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
@@ -41,8 +45,9 @@ public class SkuNoticeScrapService {
 
   private final RestTemplate restTemplate;
   private final SkuNoticeRepository skuNoticeRepository;
-  private final FCMService fcmService;
-  private final TopicRepository topicRepository;
+  private final NotificationService notificationService;
+  private final UserKeywordRepository userKeywordRepository;
+  private final UserDeviceTokenRepository userDeviceTokenRepository;
 
   @Value("${sku.notice.url}")
   private String skuNoticeApiUrl;
@@ -124,41 +129,80 @@ public class SkuNoticeScrapService {
     log.info("모든 페이지 데이터 저장 완료");
   }
 
-  @Scheduled(cron = "0 0/10 * * * ?") // 매 10분마다 실행
+  //  @Scheduled(cron = "0 0/10 * * * ?") // 매 10분마다 실행
+  //  public void saveNoticeTask() {
+  //    SkuNoticeListDTO newNotices = save(1);
+  //
+  //    if (newNotices.getSkuNoticeList().isEmpty()) return;
+  //
+  //    List<String> ecNoticeTopics =
+  //        topicRepository.findTopicsByTopicGroup(TopicGroup.SKU_EC_NOTICE.getValue());
+  //    List<String> noticeTopics =
+  //        topicRepository.findTopicsByTopicGroup(TopicGroup.SKU_NOTICE.getValue());
+  //
+  //    for (SkuNoticeDTO notice : newNotices.getSkuNoticeList()) {
+  //      TopicGroup topicGroup = TopicGroup.SKU_NOTICE;
+  //      if (notice.getAuthor().equals(ECNoticeType.GYOSU_HAKSEUB.getValue())
+  //          || notice.getAuthor().equals(ECNoticeType.DAEHAK_HYEOKSIN.getValue())
+  //          || notice.getAuthor().equals(ECNoticeType.JINLO_CHWIEOB.getValue())) {
+  //        for (String topic : ecNoticeTopics) {
+  //          log.info("토픽 확인: {}, department: {}", topic, notice.getAuthor());
+  //          if (notice.getTitle().contains(topic)) {
+  //            fcmService.sendTopicMessage(
+  //                notice.toMessageRequest(),
+  //                TopicRequestDTO.builder().topicGroup(topicGroup).keyword(topic).build());
+  //          }
+  //        }
+  //      } else {
+  //        for (String topic : noticeTopics) {
+  //          log.info("토픽 확인: {}, department: {}", topic, notice.getAuthor());
+  //          if (notice.getTitle().contains(topic)) {
+  //            fcmService.sendTopicMessage(
+  //                notice.toMessageRequest(),
+  //                TopicRequestDTO.builder().topicGroup(topicGroup).keyword(topic).build());
+  //          }
+  //        }
+  //      }
+  //    }
+  //  }
+  @Scheduled(cron = "0 0/10 * * * ?") // 10분마다 실행
   public void saveNoticeTask() {
+    System.out.println("[INFO] 공지사항 스크래핑 작업 시작");
+
     SkuNoticeListDTO newNotices = save(1);
+    if (newNotices.getSkuNoticeList().isEmpty()) {
+      System.out.println("[INFO] 새 공지사항 없음");
+      return;
+    }
 
-    if (newNotices.getSkuNoticeList().isEmpty()) return;
+    System.out.println("[INFO] 새 공지사항 수: " + newNotices.getSkuNoticeList().size());
 
-    List<String> ecNoticeTopics =
-        topicRepository.findTopicsByTopicGroup(TopicGroup.SKU_EC_NOTICE.getValue());
-    List<String> noticeTopics =
-        topicRepository.findTopicsByTopicGroup(TopicGroup.SKU_NOTICE.getValue());
+    List<UserKeyword> allKeywords = userKeywordRepository.findAll();
 
     for (SkuNoticeDTO notice : newNotices.getSkuNoticeList()) {
-      TopicGroup topicGroup = TopicGroup.SKU_NOTICE;
-      if (notice.getAuthor().equals(ECNoticeType.GYOSU_HAKSEUB.getValue())
-          || notice.getAuthor().equals(ECNoticeType.DAEHAK_HYEOKSIN.getValue())
-          || notice.getAuthor().equals(ECNoticeType.JINLO_CHWIEOB.getValue())) {
-        for (String topic : ecNoticeTopics) {
-          log.info("토픽 확인: {}, department: {}", topic, notice.getAuthor());
-          if (notice.getTitle().contains(topic)) {
-            fcmService.sendTopicMessage(
-                notice.toMessageRequest(),
-                TopicRequestDTO.builder().topicGroup(topicGroup).keyword(topic).build());
-          }
+      Set<User> matchedUsers = new HashSet<>();
+
+      for (UserKeyword keyword : allKeywords) {
+        if (notice.getTitle().contains(keyword.getKeyword())) {
+          matchedUsers.add(keyword.getUser());
         }
-      } else {
-        for (String topic : noticeTopics) {
-          log.info("토픽 확인: {}, department: {}", topic, notice.getAuthor());
-          if (notice.getTitle().contains(topic)) {
-            fcmService.sendTopicMessage(
-                notice.toMessageRequest(),
-                TopicRequestDTO.builder().topicGroup(topicGroup).keyword(topic).build());
-          }
+      }
+
+      if (!matchedUsers.isEmpty()) {
+        System.out.println(
+            "[INFO] '" + notice.getTitle() + "' 키워드 알림 대상자 수: " + matchedUsers.size());
+      }
+
+      for (User user : matchedUsers) {
+        List<UserDeviceToken> tokens = userDeviceTokenRepository.findAllByUser(user);
+        for (UserDeviceToken token : tokens) {
+          System.out.println("[INFO] 사용자 " + user.getId() + " 에게 푸시 전송: " + token.getFcmToken());
+          notificationService.sendPush(token.getFcmToken(), notice.getTitle(), "등록되었습니다");
         }
       }
     }
+
+    System.out.println("[INFO] 공지사항 스크래핑 작업 종료");
   }
 
   private LocalDateTime parseDate(String dateString) {

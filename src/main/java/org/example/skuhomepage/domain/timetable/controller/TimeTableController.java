@@ -61,4 +61,12 @@ public class TimeTableController implements TimeTableControllerSpec {
         timeTableService.deleteSubject(userDetails, subjectId);
     return ApiResponse.onSuccess(result);
   }
+
+  @Override
+  public ApiResponse<TimeTableResponseDTO.MyTimeTableDTO> dailyTimeTable(
+      UserDetails userDetails, String dayOfWeek) {
+    TimeTableResponseDTO.MyTimeTableDTO result =
+        timeTableService.getSubjectsByDay(userDetails, dayOfWeek);
+    return ApiResponse.onSuccess(result);
+  }
 }

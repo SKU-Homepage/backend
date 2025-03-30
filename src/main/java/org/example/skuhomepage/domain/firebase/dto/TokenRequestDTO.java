@@ -7,5 +7,5 @@ import lombok.Getter;
 @Schema(description = "토큰 요청 DTO")
 public class TokenRequestDTO {
   @Schema(description = "토큰", example = "fcm_token")
-  private String token;
+  private String fcmToken;
 }

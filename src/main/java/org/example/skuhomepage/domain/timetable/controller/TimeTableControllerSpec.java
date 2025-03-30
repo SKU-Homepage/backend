@@ -73,4 +73,13 @@ public interface TimeTableControllerSpec {
           UserDetails userDetails,
       @Parameter(name = "subjectId", description = "과목 아이디", required = true) @PathVariable
           Long subjectId);
+
+  @GetMapping("/weekly/{dayOfWeek}")
+  @Operation(summary = "요일별 시간표 조회하기", description = "요일별 시간표 조회하기")
+  @ApiErrorCodeExample(TimeTableErrorStatus.class)
+  ApiResponse<TimeTableResponseDTO.MyTimeTableDTO> dailyTimeTable(
+      @Parameter(name = "userDetails", description = "인증된 사용자 정보", hidden = true)
+          @AuthenticationPrincipal
+          UserDetails userDetails,
+      @Parameter(description = "조회할 요일", example = "MONDAY") @PathVariable String dayOfWeek);
 }
