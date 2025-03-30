@@ -10,8 +10,11 @@ import java.util.List;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import org.example.skuhomepage.domain.firebase.entity.Alarm;
+import org.example.skuhomepage.domain.firebase.entity.NotificationType;
 import org.example.skuhomepage.domain.firebase.entity.UserDeviceToken;
 import org.example.skuhomepage.domain.firebase.entity.UserKeyword;
+import org.example.skuhomepage.domain.firebase.repository.AlarmRepository;
 import org.example.skuhomepage.domain.firebase.repository.UserDeviceTokenRepository;
 import org.example.skuhomepage.domain.firebase.repository.UserKeywordRepository;
 import org.example.skuhomepage.domain.firebase.service.NotificationService;
@@ -48,6 +51,7 @@ public class SkuNoticeScrapService {
   private final NotificationService notificationService;
   private final UserKeywordRepository userKeywordRepository;
   private final UserDeviceTokenRepository userDeviceTokenRepository;
+  private final AlarmRepository alarmRepository;
 
   @Value("${sku.notice.url}")
   private String skuNoticeApiUrl;
@@ -197,7 +201,18 @@ public class SkuNoticeScrapService {
         List<UserDeviceToken> tokens = userDeviceTokenRepository.findAllByUser(user);
         for (UserDeviceToken token : tokens) {
           System.out.println("[INFO] 사용자 " + user.getId() + " 에게 푸시 전송: " + token.getFcmToken());
-          notificationService.sendPush(token.getFcmToken(), notice.getTitle(), "등록되었습니다");
+          notificationService.sendPush(
+              token.getFcmToken(), notice.getTitle(), "등록되었습니다", "/notice");
+
+          Alarm alarm =
+              Alarm.builder()
+                  .user(user)
+                  .title(notice.getTitle())
+                  .content("새 공지사항이 등록되었습니다.")
+                  .notificationType(NotificationType.NOTICE)
+                  .build();
+
+          alarmRepository.save(alarm);
         }
       }
     }
