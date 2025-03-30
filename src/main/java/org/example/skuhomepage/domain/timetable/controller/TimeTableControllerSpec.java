@@ -82,4 +82,11 @@ public interface TimeTableControllerSpec {
           @AuthenticationPrincipal
           UserDetails userDetails,
       @Parameter(description = "조회할 요일", example = "MONDAY") @PathVariable String dayOfWeek);
+
+  @GetMapping("/search/name")
+  @Operation(summary = "과목명으로 과목 검색하기", description = "과목 검색하기 api")
+  @ApiErrorCodeExample(TimeTableErrorStatus.class)
+  ApiResponse<TimeTableResponseDTO.TimeTableListDTO> searchTimeTable(
+      @Parameter(hidden = true) @AuthenticationPrincipal UserDetails userDetails,
+      @Parameter(description = "검색할 과목명", example = "알고리즘") @RequestParam String name);
 }

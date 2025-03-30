@@ -70,4 +70,11 @@ public class TimeTableController implements TimeTableControllerSpec {
         timeTableService.getSubjectsByDay(userDetails, dayOfWeek);
     return ApiResponse.onSuccess(result);
   }
+
+  @Override
+  public ApiResponse<TimeTableResponseDTO.TimeTableListDTO> searchTimeTable(
+      UserDetails userDetails, String name) {
+    TimeTableResponseDTO.TimeTableListDTO result = timeTableService.searchSubjects(name);
+    return ApiResponse.onSuccess(result);
+  }
 }
