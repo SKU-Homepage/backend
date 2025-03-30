@@ -58,13 +58,14 @@ public class FCMController implements FCMControllerSpec {
   }
 
   @Override
-  public ApiResponse<Void> topicDelete(String keyword, CustomUserDetails userDetails) {
-    keywordService.deleteKeyword(keyword, userDetails);
+  public ApiResponse<Void> topicDelete(Long keywordId, CustomUserDetails userDetails) {
+    keywordService.deleteKeyword(keywordId, userDetails);
     return ApiResponse.onSuccess(null);
   }
-  //
-  //  @Override
-  //  public ApiResponse<Void> topicList(TopicGroup topicGroup, CustomUserDetails userDetails) {
-  //    return ApiResponse.onSuccess(null);
-  //  }
+
+  @Override
+  public ApiResponse<NotificationResponseDTO.keywordDTO> topicList(CustomUserDetails userDetails) {
+    NotificationResponseDTO.keywordDTO result = keywordService.getUserKeywords(userDetails);
+    return ApiResponse.onSuccess(result);
+  }
 }

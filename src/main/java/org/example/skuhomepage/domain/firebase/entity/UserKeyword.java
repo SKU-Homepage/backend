@@ -4,7 +4,6 @@ import jakarta.persistence.*;
 
 import org.example.skuhomepage.domain.mypage.entity.User;
 import org.example.skuhomepage.global.common.BaseTimeEntity;
-import org.example.skuhomepage.global.enums.TopicGroup;
 
 import lombok.*;
 
@@ -23,6 +22,6 @@ public class UserKeyword extends BaseTimeEntity {
   @Column(nullable = false)
   private String keyword;
 
-  @Column(nullable = false)
-  private TopicGroup topicGroup;
+  //  @Column(nullable = false)
+  //  private TopicGroup topicGroup;
 }

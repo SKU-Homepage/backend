@@ -9,6 +9,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
 @Tag(name = "알림", description = "FCM 알림 관련 API")
@@ -40,16 +41,15 @@ public interface FCMControllerSpec {
       @RequestBody TopicRequestDTO keywordReq,
       @AuthenticationPrincipal CustomUserDetails userDetails);
 
-  @DeleteMapping("/keyword")
+  @DeleteMapping("/keyword/{keywordId}")
   @Operation(summary = "키워드 삭제", description = "키워드를 삭제하는 API")
   ApiResponse<Void> topicDelete(
-      @RequestBody String keyword, @AuthenticationPrincipal CustomUserDetails userDetails);
+      @Parameter(description = "삭제할 키워드", example = "1") @PathVariable Long keywordId,
+      @AuthenticationPrincipal CustomUserDetails userDetails);
 
-  //  @GetMapping("/keyword")
-  //  @Operation(summary = "키워드 조회", description = "키워드를 조회하는 API")
-  //  ApiResponse<Void> topicList(
-  //      @Parameter(description = "주제", example = "SKU_NOTICE", required = true) @RequestParam
-  //          TopicGroup topicGroup,
-  //      @Parameter(description = "사용자 정보", hidden = true) @AuthenticationPrincipal
-  //          CustomUserDetails userDetails);
+  @GetMapping("/keyword")
+  @Operation(summary = "키워드 조회", description = "키워드를 조회하는 API")
+  ApiResponse<NotificationResponseDTO.keywordDTO> topicList(
+      @Parameter(description = "사용자 정보", hidden = true) @AuthenticationPrincipal
+          CustomUserDetails userDetails);
 }
