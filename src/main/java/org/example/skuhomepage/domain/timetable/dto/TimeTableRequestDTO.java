@@ -1,8 +1,11 @@
 package org.example.skuhomepage.domain.timetable.dto;
 
+import java.util.List;
+
 import jakarta.validation.constraints.NotBlank;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 public class TimeTableRequestDTO {
@@ -19,5 +22,11 @@ public class TimeTableRequestDTO {
     @NotBlank
     @Schema(description = "장소", example = "북악관 608호")
     private String classroom;
+  }
+
+  @Getter
+  @AllArgsConstructor
+  public static class AddSubjectDTO {
+    private List<Long> subjectIds;
   }
 }

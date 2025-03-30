@@ -31,7 +31,10 @@ public class TimeTableResponseDTO {
       @Schema(description = "마지막 존재 여부", example = "true") boolean hasNext,
       @Schema(description = "다음 페이지", example = "2") int nextPage) {}
 
-  public record AddSubjectDTO(@Schema(description = "과목 id", example = "1") Long subjectId) {}
+  public record AddSubjectDTO(
+      @Schema(description = "과목 id", example = "1") List<Long> subjectIds) {}
+
+  public record SelfSubjectDTO(@Schema(description = "과목 id", example = "1") Long subjectId) {}
 
   public record DeleteSubjectDTO(@Schema(description = "과목 id", example = "1") Long subjectId) {}
 

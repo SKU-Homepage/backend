@@ -2,6 +2,7 @@ package org.example.skuhomepage.domain.timetable.service;
 
 import java.time.DayOfWeek;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -92,11 +93,7 @@ public class TimeTableService {
     return new TimeTableListDTO(timeTableDTOS, subjectList.hasNext(), pageable.getPageNumber() + 1);
   }
 
-  public AddSubjectDTO addSubject(UserDetails userDetails, Long subjectId) {
-    Subject subject =
-        subjectRepository
-            .findById(subjectId)
-            .orElseThrow(() -> new GeneralException(TimeTableErrorStatus.SUBJECT_NOT_FOUND));
+  public AddSubjectDTO addSubject(UserDetails userDetails, List<Long> subjectIds) {
     TimeTable timeTable =
         timeTableRepository
             .findByUser_Account(userDetails.getUsername())
@@ -115,24 +112,33 @@ public class TimeTableService {
                           .build();
                   return timeTableRepository.save(newTimeTable);
                 });
-    boolean isAlreadyAdded =
-        timeTableSubjectRepository.existsByTimeTableAndSubject(timeTable, subject);
-    if (isAlreadyAdded) {
-      throw new GeneralException(TimeTableErrorStatus.SUBJECT_ALREADY_EXIST);
+    List<Long> addedSubjectIds = new ArrayList<>();
+
+    for (Long subjectId : subjectIds) {
+      Subject subject =
+          subjectRepository
+              .findById(subjectId)
+              .orElseThrow(() -> new GeneralException(TimeTableErrorStatus.SUBJECT_NOT_FOUND));
+
+      boolean isAlreadyAdded =
+          timeTableSubjectRepository.existsByTimeTableAndSubject(timeTable, subject);
+      if (!isAlreadyAdded) {
+        TimeTableSubject timeTableSubject =
+            TimeTableSubject.builder()
+                .timeTable(timeTable)
+                .subject(subject)
+                .isCustomSubject(false)
+                .build();
+
+        timeTableSubjectRepository.save(timeTableSubject);
+        addedSubjectIds.add(subject.getId());
+      }
     }
-
-    TimeTableSubject timeTableSubject =
-        TimeTableSubject.builder()
-            .timeTable(timeTable)
-            .subject(subject)
-            .isCustomSubject(false)
-            .build();
-
-    timeTableSubjectRepository.save(timeTableSubject);
-    return new AddSubjectDTO(subject.getId());
+    return new AddSubjectDTO(addedSubjectIds);
   }
 
-  public AddSubjectDTO addSelfSubject(UserDetails userDetails, selfSubjectDTO request) {
+  public TimeTableResponseDTO.SelfSubjectDTO addSelfSubject(
+      UserDetails userDetails, selfSubjectDTO request) {
     Subject subject =
         subjectRepository.save(
             Subject.builder()
@@ -165,7 +171,7 @@ public class TimeTableService {
             .build();
 
     timeTableSubjectRepository.save(timeTableSubject);
-    return new AddSubjectDTO(subject.getId());
+    return new TimeTableResponseDTO.SelfSubjectDTO(subject.getId());
   }
 
   public DeleteSubjectDTO deleteSubject(UserDetails userDetails, Long subjectId) {
