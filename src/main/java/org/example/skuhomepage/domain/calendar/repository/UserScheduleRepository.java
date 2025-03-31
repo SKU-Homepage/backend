@@ -11,14 +11,17 @@ public interface UserScheduleRepository extends JpaRepository<UserSchedule, Long
 
   @Query(
       "SELECT us FROM UserSchedule us "
-          + "WHERE (:startDayOfMonth <= us.startDateTime AND us.startDateTime <= :endDayOfMonth) OR (:startDayOfMonth <= us.endDateTime AND us.endDateTime <= :endDayOfMonth) "
+          + "WHERE us.user.id = :userId "
+          + "AND (:startDayOfMonth <= us.startDateTime AND us.startDateTime <= :endDayOfMonth) "
+          + "OR (:startDayOfMonth <= us.endDateTime AND us.endDateTime <= :endDayOfMonth) "
           + "ORDER BY us.startDateTime ASC")
-  List<UserSchedule> findSchedulesByMonth(
-      LocalDateTime startDayOfMonth, LocalDateTime endDayOfMonth);
+  List<UserSchedule> findSchedulesByUserAndMonth(
+      long userId, LocalDateTime startDayOfMonth, LocalDateTime endDayOfMonth);
 
   @Query(
       "SELECT us FROM UserSchedule us "
-          + "WHERE us.startDateTime <= :day AND us.endDateTime >= :day "
+          + "WHERE us.user.id = :userId "
+          + "AND us.startDateTime <= :day AND us.endDateTime >= :day "
           + "ORDER BY us.startDateTime ASC")
-  List<UserSchedule> findSchedulesByDay(LocalDateTime day);
+  List<UserSchedule> findSchedulesByUserAndDay(long userId, LocalDateTime day);
 }

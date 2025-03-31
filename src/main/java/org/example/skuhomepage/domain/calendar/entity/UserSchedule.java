@@ -4,6 +4,8 @@ import java.time.LocalDateTime;
 
 import jakarta.persistence.*;
 
+import org.example.skuhomepage.domain.mypage.entity.User;
+
 import lombok.*;
 
 @Entity
@@ -31,6 +33,10 @@ public class UserSchedule {
 
   @Column(nullable = false)
   private String labelColor;
+
+  @ManyToOne
+  @JoinColumn(name = "user_id")
+  private User user;
 
   public boolean getIsAllDay() {
     return isAllDay;

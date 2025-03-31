@@ -91,15 +91,21 @@ public class MyPageService {
     User user = findOrCreateUser(userInfo);
     String token = jwtUtil.createAccessToken(UserConverter.toCustomUserInfoDto(user));
 
-    ResponseCookie cookie =
+    ResponseCookie.ResponseCookieBuilder cookieBuilder =
         ResponseCookie.from("token", token)
             .httpOnly(true)
             .secure(true)
             .sameSite("None")
             .path("/")
-            .domain(".skuniv.co.kr")
-            .maxAge(Duration.ofDays(7))
-            .build();
+            .maxAge(Duration.ofDays(7));
+
+    if (!env.equals("0")) {
+      cookieBuilder.domain("skuniv.ac.kr");
+    }
+
+    ResponseCookie cookie = cookieBuilder.build();
+
+    response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
 
     response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
     return LoginResultDTO.from(user, token);

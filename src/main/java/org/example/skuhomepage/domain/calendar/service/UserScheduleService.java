@@ -6,11 +6,16 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.example.skuhomepage.domain.calendar.dto.DateTimeDTO;
+import org.example.skuhomepage.domain.calendar.dto.ScheduleResponseDTO;
+import org.example.skuhomepage.domain.calendar.dto.SkuCalendarResponseDTO;
 import org.example.skuhomepage.domain.calendar.dto.UserScheduleRequestDTO.*;
 import org.example.skuhomepage.domain.calendar.dto.UserScheduleResponseDTO.UserScheduleDTO;
 import org.example.skuhomepage.domain.calendar.entity.UserSchedule;
 import org.example.skuhomepage.domain.calendar.exception.CalendarErrorStatus;
 import org.example.skuhomepage.domain.calendar.repository.UserScheduleRepository;
+import org.example.skuhomepage.domain.mypage.entity.User;
+import org.example.skuhomepage.domain.mypage.exception.MyPageErrorStatus;
+import org.example.skuhomepage.domain.mypage.repository.UserRepository;
 import org.example.skuhomepage.global.exception.GeneralException;
 import org.springframework.stereotype.Service;
 
@@ -21,21 +26,12 @@ import lombok.RequiredArgsConstructor;
 public class UserScheduleService {
 
   private final UserScheduleRepository userScheduleRepository;
+  private final UserRepository userRepository;
+  private final SkuCalendarService skuCalendarService;
 
-  public List<UserScheduleDTO> getUserSchedule(int year, int month, int day) {
+  public List<UserScheduleDTO> getUserSchedule(int year, int month, int day, long userId) {
 
-    int lastDay = YearMonth.of(year, month).lengthOfMonth();
-    LocalDateTime startDateTime = LocalDateTime.of(year, month, day == 0 ? 1 : day, 0, 0, 0);
-    LocalDateTime endDateTime =
-        LocalDateTime.of(year, month, day == 0 ? lastDay : day, 0, 0).plusDays(1).minusNanos(1000);
-
-    System.out.println("startDateTime: " + startDateTime);
-    System.out.println("endDateTime: " + endDateTime);
-
-    List<UserSchedule> userScheduleList =
-        day == 0
-            ? userScheduleRepository.findSchedulesByMonth(startDateTime, endDateTime)
-            : userScheduleRepository.findSchedulesByDay(startDateTime);
+    List<UserSchedule> userScheduleList = getUserScheduleList(year, month, day, userId);
 
     List<UserScheduleDTO> userScheduleDTOList = new ArrayList<>();
     for (UserSchedule userSchedule : userScheduleList) {
@@ -45,7 +41,7 @@ public class UserScheduleService {
     return userScheduleDTOList;
   }
 
-  public long addUserSchedule(AddUserScheduleDTO requestDTO) {
+  public long addUserSchedule(AddUserScheduleDTO requestDTO, long userId) {
 
     if (requestDTO.isAllDay()) {
       LocalDateTime start = requestDTO.getStart().date().atStartOfDay();
@@ -57,13 +53,20 @@ public class UserScheduleService {
 
     validateScheduleDates(requestDTO.getStart(), requestDTO.getEnd());
 
-    return userScheduleRepository.save(AddUserScheduleDTO.toEntity(requestDTO)).getId();
+    User user =
+        userRepository
+            .findById(userId)
+            .orElseThrow(() -> new GeneralException(MyPageErrorStatus.USER_NOT_FOUND));
+
+    return userScheduleRepository.save(AddUserScheduleDTO.toEntity(requestDTO, user)).getId();
   }
 
-  public UserScheduleDTO updateUserSchedule(long scheduleId, UpdateUserScheduleDTO requestDTO) {
+  public UserScheduleDTO updateUserSchedule(
+      long scheduleId, UpdateUserScheduleDTO requestDTO, long userId) {
 
     return userScheduleRepository
         .findById(scheduleId)
+        .filter(userSchedule -> userSchedule.getUser().getId() == userId)
         .map(
             userSchedule -> {
               LocalDateTime startDateTime =
@@ -120,15 +123,44 @@ public class UserScheduleService {
         .orElseThrow(() -> new GeneralException(CalendarErrorStatus.SCHEDULE_NOT_FOUND));
   }
 
-  public void deleteUserSchedule(long scheduleId) {
+  public void deleteUserSchedule(long scheduleId, long userId) {
 
     userScheduleRepository
         .findById(scheduleId)
         .ifPresentOrElse(
-            userScheduleRepository::delete,
+            schedule -> {
+              if (schedule.getUser().getId() == userId) {
+                userScheduleRepository.delete(schedule);
+              } else {
+                // 권한 없음: 삭제할 일정이 본인의 일정이 아님(보안 적인 이유로 NOT_FOUND로 처리)
+                throw new GeneralException(CalendarErrorStatus.SCHEDULE_NOT_FOUND);
+              }
+            },
             () -> {
               throw new GeneralException(CalendarErrorStatus.SCHEDULE_NOT_FOUND);
             });
+  }
+
+  public List<ScheduleResponseDTO> getAllSchedule(int year, int month, int day, long userId) {
+    List<UserScheduleDTO> userScheduleList = getUserSchedule(year, month, day, userId);
+    List<SkuCalendarResponseDTO.SkuScheduleDTO> skuScheduleDTOList =
+        skuCalendarService.getSkuCalendar(year, month, day);
+
+    return ScheduleResponseDTO.toDtoList(userScheduleList, skuScheduleDTOList);
+  }
+
+  private List<UserSchedule> getUserScheduleList(int year, int month, int day, long userId) {
+    int lastDay = YearMonth.of(year, month).lengthOfMonth();
+    LocalDateTime startDateTime = LocalDateTime.of(year, month, day == 0 ? 1 : day, 0, 0, 0);
+    LocalDateTime endDateTime =
+        LocalDateTime.of(year, month, day == 0 ? lastDay : day, 0, 0).plusDays(1).minusNanos(1000);
+
+    System.out.println("startDateTime: " + startDateTime);
+    System.out.println("endDateTime: " + endDateTime);
+
+    return day == 0
+        ? userScheduleRepository.findSchedulesByUserAndMonth(userId, startDateTime, endDateTime)
+        : userScheduleRepository.findSchedulesByUserAndDay(userId, startDateTime);
   }
 
   private void validateScheduleDates(DateTimeDTO start, DateTimeDTO end) {

@@ -8,6 +8,7 @@ public class UserScheduleResponseDTO {
 
   @Schema(description = "개인 일정 조회 응답 DTO")
   public record UserScheduleDTO(
+      @Schema(description = "일정 ID", example = "개인 일정 ID") long id,
       @Schema(description = "일정 내용", example = "개인 일정") String title,
       @Schema(description = "일정 시작 시간") DateTimeDTO start,
       @Schema(description = "일정 종료 시간") DateTimeDTO end,
@@ -15,6 +16,7 @@ public class UserScheduleResponseDTO {
       @Schema(description = "일정 색상", example = "#000000") String labelColor) {
     public UserScheduleDTO(UserSchedule entity) {
       this(
+          entity.getId(),
           entity.getTitle(),
           DateTimeDTO.of(entity.getStartDateTime()),
           DateTimeDTO.of(entity.getEndDateTime()),
