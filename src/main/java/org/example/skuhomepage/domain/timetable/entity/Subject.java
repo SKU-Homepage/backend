@@ -56,17 +56,17 @@ public class Subject extends BaseTimeEntity {
 
   @Comment("학점")
   @Column(nullable = false)
-  private int credit;
+  private String credit;
 
   @Comment("학년")
   @Column(nullable = false)
-  private int grade;
+  private String grade;
 
   @Comment("수강대상")
   @Column(nullable = false)
   private String target;
 
-  @Comment("구분")
+  @Comment("이수구분")
   @Enumerated(EnumType.STRING)
   private SubjectType division;
 }

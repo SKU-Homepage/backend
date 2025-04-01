@@ -7,6 +7,7 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 
 import org.example.skuhomepage.domain.calendar.entity.UserSchedule;
+import org.example.skuhomepage.domain.mypage.entity.User;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
@@ -51,13 +52,14 @@ public class UserScheduleRequestDTO {
       return dto;
     }
 
-    public static UserSchedule toEntity(AddUserScheduleDTO dto) {
+    public static UserSchedule toEntity(AddUserScheduleDTO dto, User user) {
       return UserSchedule.builder()
           .title(dto.title)
           .startDateTime(LocalDateTime.of(dto.start.date(), dto.start.time()))
           .endDateTime(LocalDateTime.of(dto.end.date(), dto.end.time()))
           .isAllDay(dto.allDay)
           .labelColor(dto.labelColor)
+          .user(user)
           .build();
     }
   }

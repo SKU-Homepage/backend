@@ -45,20 +45,20 @@ public interface TimeTableControllerSpec {
       @RequestParam(defaultValue = "0") int page,
       @RequestParam(defaultValue = "10") int size);
 
-  @PostMapping("/{subjectId}")
+  @PostMapping("/add")
   @Operation(summary = "선택한 과목 내 시간표에 추가하기", description = "선택한 수업 내 시간표에 추가하기")
   @ApiErrorCodeExample(TimeTableErrorStatus.class)
   ApiResponse<TimeTableResponseDTO.AddSubjectDTO> addSubject(
       @Parameter(name = "userDetails", description = "인증된 사용자 정보", hidden = true)
           @AuthenticationPrincipal
           UserDetails userDetails,
-      @Parameter(name = "subjectId", description = "과목 아이디", required = true) @PathVariable
-          Long subjectId);
+      @Parameter(name = "subjectId", description = "과목 아이디", required = true) @RequestBody
+          TimeTableRequestDTO.AddSubjectDTO subjectDTO);
 
   @PostMapping("/self")
   @Operation(summary = "수업 직접 추가하기", description = "수업 직접 추가하는 api")
   @ApiErrorCodeExample(TimeTableErrorStatus.class)
-  ApiResponse<TimeTableResponseDTO.AddSubjectDTO> addSelfSubject(
+  ApiResponse<TimeTableResponseDTO.SelfSubjectDTO> addSelfSubject(
       @Parameter(name = "userDetails", description = "인증된 사용자 정보", hidden = true)
           @AuthenticationPrincipal
           UserDetails userDetails,
@@ -73,4 +73,20 @@ public interface TimeTableControllerSpec {
           UserDetails userDetails,
       @Parameter(name = "subjectId", description = "과목 아이디", required = true) @PathVariable
           Long subjectId);
+
+  @GetMapping("/weekly/{dayOfWeek}")
+  @Operation(summary = "요일별 시간표 조회하기", description = "요일별 시간표 조회하기")
+  @ApiErrorCodeExample(TimeTableErrorStatus.class)
+  ApiResponse<TimeTableResponseDTO.MyTimeTableDTO> dailyTimeTable(
+      @Parameter(name = "userDetails", description = "인증된 사용자 정보", hidden = true)
+          @AuthenticationPrincipal
+          UserDetails userDetails,
+      @Parameter(description = "조회할 요일", example = "MONDAY") @PathVariable String dayOfWeek);
+
+  @GetMapping("/search/name")
+  @Operation(summary = "과목명으로 과목 검색하기", description = "과목 검색하기 api")
+  @ApiErrorCodeExample(TimeTableErrorStatus.class)
+  ApiResponse<TimeTableResponseDTO.TimeTableListDTO> searchTimeTable(
+      @Parameter(hidden = true) @AuthenticationPrincipal UserDetails userDetails,
+      @Parameter(description = "검색할 과목명", example = "알고리즘") @RequestParam String name);
 }

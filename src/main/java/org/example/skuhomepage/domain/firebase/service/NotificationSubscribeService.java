@@ -2,6 +2,7 @@ package org.example.skuhomepage.domain.firebase.service;
 
 import java.util.List;
 
+import org.example.skuhomepage.domain.firebase.dto.TopicRequestDTO;
 import org.example.skuhomepage.domain.firebase.entity.NotificationSubscribe;
 import org.example.skuhomepage.domain.firebase.repository.NotificationSubscribeRepository;
 import org.springframework.stereotype.Service;
@@ -14,6 +15,8 @@ import lombok.RequiredArgsConstructor;
 public class NotificationSubscribeService {
 
   private final NotificationSubscribeRepository notificationSubscribeRepository;
+
+  public void registerTopic(TopicRequestDTO topicReq, long userId) {}
 
   public List<String> getTokenListByTopic(String topic) {
     return notificationSubscribeRepository.findTokenByTopic(topic);

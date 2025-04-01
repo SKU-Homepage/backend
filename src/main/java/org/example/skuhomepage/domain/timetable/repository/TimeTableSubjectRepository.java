@@ -1,5 +1,6 @@
 package org.example.skuhomepage.domain.timetable.repository;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.example.skuhomepage.domain.timetable.entity.Subject;
@@ -17,4 +18,6 @@ public interface TimeTableSubjectRepository extends JpaRepository<TimeTableSubje
       "SELECT ts FROM TimeTableSubject ts WHERE ts.timeTable.user.account = :account AND ts.subject.id = :subjectId")
   Optional<TimeTableSubject> findByUserAccountBySubjectId(
       @Param("account") String account, @Param("subjectId") Long subjectId);
+
+  List<TimeTableSubject> findAllByTimeTable(TimeTable timeTable);
 }

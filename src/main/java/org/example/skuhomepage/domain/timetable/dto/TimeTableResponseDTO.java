@@ -31,7 +31,10 @@ public class TimeTableResponseDTO {
       @Schema(description = "마지막 존재 여부", example = "true") boolean hasNext,
       @Schema(description = "다음 페이지", example = "2") int nextPage) {}
 
-  public record AddSubjectDTO(@Schema(description = "과목 id", example = "1") Long subjectId) {}
+  public record AddSubjectDTO(
+      @Schema(description = "과목 id", example = "1") List<Long> subjectIds) {}
+
+  public record SelfSubjectDTO(@Schema(description = "과목 id", example = "1") Long subjectId) {}
 
   public record DeleteSubjectDTO(@Schema(description = "과목 id", example = "1") Long subjectId) {}
 
@@ -43,8 +46,8 @@ public class TimeTableResponseDTO {
       @Schema(description = "수업 시작 시간", example = "10:00") String startTime,
       @Schema(description = "수업 종료 시간", example = "11:30") String endTime,
       @Schema(description = "장소", example = "북악관 608호") String classroom,
-      @Schema(description = "학점", example = "3") int credit,
-      @Schema(description = "학년", example = "1") int grade,
+      @Schema(description = "학점", example = "3") String credit,
+      @Schema(description = "학년", example = "1") String grade,
       @Schema(description = "수강 대상", example = "컴퓨터공학과") String target,
       @Schema(description = "구분", example = "전공") String division) {
     public TimeTableDTO(Subject subject) {

@@ -41,15 +41,16 @@ public class TimeTableController implements TimeTableControllerSpec {
 
   @Override
   public ApiResponse<TimeTableResponseDTO.AddSubjectDTO> addSubject(
-      UserDetails userDetails, Long subjectId) {
-    TimeTableResponseDTO.AddSubjectDTO result = timeTableService.addSubject(userDetails, subjectId);
+      UserDetails userDetails, TimeTableRequestDTO.AddSubjectDTO subjectDTO) {
+    TimeTableResponseDTO.AddSubjectDTO result =
+        timeTableService.addSubject(userDetails, subjectDTO.getSubjectIds());
     return ApiResponse.onSuccess(result);
   }
 
   @Override
-  public ApiResponse<TimeTableResponseDTO.AddSubjectDTO> addSelfSubject(
+  public ApiResponse<TimeTableResponseDTO.SelfSubjectDTO> addSelfSubject(
       UserDetails userDetails, TimeTableRequestDTO.selfSubjectDTO request) {
-    TimeTableResponseDTO.AddSubjectDTO result =
+    TimeTableResponseDTO.SelfSubjectDTO result =
         timeTableService.addSelfSubject(userDetails, request);
     return ApiResponse.onSuccess(result);
   }
@@ -59,6 +60,21 @@ public class TimeTableController implements TimeTableControllerSpec {
       UserDetails userDetails, Long subjectId) {
     TimeTableResponseDTO.DeleteSubjectDTO result =
         timeTableService.deleteSubject(userDetails, subjectId);
+    return ApiResponse.onSuccess(result);
+  }
+
+  @Override
+  public ApiResponse<TimeTableResponseDTO.MyTimeTableDTO> dailyTimeTable(
+      UserDetails userDetails, String dayOfWeek) {
+    TimeTableResponseDTO.MyTimeTableDTO result =
+        timeTableService.getSubjectsByDay(userDetails, dayOfWeek);
+    return ApiResponse.onSuccess(result);
+  }
+
+  @Override
+  public ApiResponse<TimeTableResponseDTO.TimeTableListDTO> searchTimeTable(
+      UserDetails userDetails, String name) {
+    TimeTableResponseDTO.TimeTableListDTO result = timeTableService.searchSubjects(name);
     return ApiResponse.onSuccess(result);
   }
 }

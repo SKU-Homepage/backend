@@ -57,6 +57,7 @@ tasks.named('compileJava') {
     dependsOn 'spotlessApply'
 }
 tasks.named('test') {
+    systemProperty 'spring.profiles.active', 'dev'
     useJUnitPlatform()
 }
 

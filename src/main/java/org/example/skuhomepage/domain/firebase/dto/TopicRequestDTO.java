@@ -1,18 +1,13 @@
 package org.example.skuhomepage.domain.firebase.dto;
 
-import org.example.skuhomepage.global.enums.TopicGroup;
+import jakarta.validation.constraints.NotBlank;
 
-import io.swagger.v3.oas.annotations.media.Schema;
-import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Getter
-@Builder
-@Schema(description = "키워드 요청 DTO")
+@NoArgsConstructor
 public class TopicRequestDTO {
-  @Schema(description = "키워드", example = "장학금")
-  private String keyword;
 
-  @Schema(description = "토픽 그룹", example = "SKU_NOTICE")
-  private TopicGroup topicGroup;
+  @NotBlank private String keyword;
 }

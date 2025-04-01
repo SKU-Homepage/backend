@@ -9,6 +9,8 @@ import org.example.skuhomepage.domain.calendar.dto.UserScheduleResponseDTO.*;
 import org.example.skuhomepage.domain.calendar.exception.CalendarErrorStatus;
 import org.example.skuhomepage.global.annotation.ApiErrorCodeExample;
 import org.example.skuhomepage.global.apiPayload.ApiResponse;
+import org.example.skuhomepage.global.security.CustomUserDetails;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -27,23 +29,36 @@ public interface UserScheduleControllerSpec {
       @Parameter(description = "조회 월", example = "3") @RequestParam int month,
       @Parameter(description = "조회 일", example = "31")
           @RequestParam(required = false, defaultValue = "0")
-          int day);
+          int day,
+      @Parameter(name = "userDetails", description = "인증된 사용자 정보", hidden = true)
+          @AuthenticationPrincipal
+          CustomUserDetails userDetails);
 
   @Operation(summary = "개인 일정 추가", description = "개인 일정을 추가하는 API")
   @ApiErrorCodeExample(CalendarErrorStatus.class)
   @PostMapping
-  ApiResponse<Void> addUserSchedule(@Valid @RequestBody AddUserScheduleDTO requestDTO);
+  ApiResponse<Void> addUserSchedule(
+      @Valid @RequestBody AddUserScheduleDTO requestDTO,
+      @Parameter(name = "userDetails", description = "인증된 사용자 정보", hidden = true)
+          @AuthenticationPrincipal
+          CustomUserDetails userDetails);
 
   @Operation(summary = "개인 일정 수정", description = "개인 일정을 수정하는 API")
   @ApiErrorCodeExample(CalendarErrorStatus.class)
   @PatchMapping("/{scheduleId}")
   ApiResponse<UserScheduleDTO> updateUserSchedule(
       @Parameter(description = "일정 ID", example = "1") @PathVariable long scheduleId,
-      @Valid @RequestBody UpdateUserScheduleDTO requestDTO);
+      @Valid @RequestBody UpdateUserScheduleDTO requestDTO,
+      @Parameter(name = "userDetails", description = "인증된 사용자 정보", hidden = true)
+          @AuthenticationPrincipal
+          CustomUserDetails userDetails);
 
   @Operation(summary = "개인 일정 삭제", description = "개인 일정을 삭제하는 API")
   @ApiErrorCodeExample(CalendarErrorStatus.class)
   @DeleteMapping("/{scheduleId}")
   ApiResponse<Void> deleteUserSchedule(
-      @Parameter(description = "일정 ID", example = "1") @PathVariable long scheduleId);
+      @Parameter(description = "일정 ID", example = "1") @PathVariable long scheduleId,
+      @Parameter(name = "userDetails", description = "인증된 사용자 정보", hidden = true)
+          @AuthenticationPrincipal
+          CustomUserDetails userDetails);
 }
