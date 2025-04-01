@@ -23,7 +23,6 @@ import org.example.skuhomepage.domain.timetable.dto.TimeTableResponseDTO.AddSubj
 import org.example.skuhomepage.domain.timetable.dto.TimeTableResponseDTO.DeleteSubjectDTO;
 import org.example.skuhomepage.domain.timetable.dto.TimeTableResponseDTO.MyTimeTableDTO;
 import org.example.skuhomepage.domain.timetable.dto.TimeTableResponseDTO.TimeTableListDTO;
-import org.example.skuhomepage.domain.timetable.dto.TimeTableResponseDTO.TodayTimeTableDTO;
 import org.example.skuhomepage.domain.timetable.entity.Subject;
 import org.example.skuhomepage.domain.timetable.entity.SubjectType;
 import org.example.skuhomepage.domain.timetable.entity.TimeTable;
@@ -68,17 +67,17 @@ public class TimeTableService {
             .map(
                 ts ->
                     new TimeTableResponseDTO.TimeTableDTO(
-                            ts.getSubject().getId(),
-                            ts.getSubject().getSubject(),
-                            ts.getSubject().getProfessor(),
-                            ts.getSubject().getDay(),
-                            ts.getSubject().getStartTime(),
-                            ts.getSubject().getStartTime(),
-                            ts.getSubject().getClassroom(),
-                            ts.getSubject().getCredit(),
-                            ts.getSubject().getGrade(),
-                            ts.getSubject().getTarget(),
-                            ts.getSubject().getDivision().name()))
+                        ts.getSubject().getId(),
+                        ts.getSubject().getSubject(),
+                        ts.getSubject().getProfessor(),
+                        ts.getSubject().getDay(),
+                        ts.getSubject().getStartTime(),
+                        ts.getSubject().getStartTime(),
+                        ts.getSubject().getClassroom(),
+                        ts.getSubject().getCredit(),
+                        ts.getSubject().getGrade(),
+                        ts.getSubject().getTarget(),
+                        ts.getSubject().getDivision().name()))
             .collect(Collectors.toList());
     return new TimeTableResponseDTO.TodayTimeTableListDTO(todaySubjects);
   }
@@ -93,19 +92,19 @@ public class TimeTableService {
         timeTable.getTimeTableSubjects().stream()
             .map(
                 ts ->
-                        new TimeTableResponseDTO.TimeTableDTO(
-                                ts.getSubject().getId(),
-                                ts.getSubject().getSubject(),
-                                ts.getSubject().getProfessor(),
-                                ts.getSubject().getDay(),
-                                ts.getSubject().getStartTime(),
-                                ts.getSubject().getStartTime(),
-                                ts.getSubject().getClassroom(),
-                                ts.getSubject().getCredit(),
-                                ts.getSubject().getGrade(),
-                                ts.getSubject().getTarget(),
-                                ts.getSubject().getDivision().name()))
-                .collect(Collectors.toList());
+                    new TimeTableResponseDTO.TimeTableDTO(
+                        ts.getSubject().getId(),
+                        ts.getSubject().getSubject(),
+                        ts.getSubject().getProfessor(),
+                        ts.getSubject().getDay(),
+                        ts.getSubject().getStartTime(),
+                        ts.getSubject().getStartTime(),
+                        ts.getSubject().getClassroom(),
+                        ts.getSubject().getCredit(),
+                        ts.getSubject().getGrade(),
+                        ts.getSubject().getTarget(),
+                        ts.getSubject().getDivision().name()))
+            .collect(Collectors.toList());
 
     return new MyTimeTableDTO(subjects);
   }
@@ -224,17 +223,24 @@ public class TimeTableService {
 
     List<TimeTableSubject> mySubjects = timeTableSubjectRepository.findAllByTimeTable(myTimeTable);
 
-    List<TimeTableResponseDTO.MySubjectDTO> subjects =
+    List<TimeTableResponseDTO.TimeTableDTO> subjects =
         mySubjects.stream()
             .map(TimeTableSubject::getSubject)
             .filter(subject -> isSubjectOnToday(subject, targetDay))
             .map(
                 subject ->
-                    new TimeTableResponseDTO.MySubjectDTO(
+                    new TimeTableResponseDTO.TimeTableDTO(
                         subject.getId(),
                         subject.getSubject(),
-                        subject.getTime(),
-                        subject.getClassroom()))
+                        subject.getProfessor(),
+                        subject.getDay(),
+                        subject.getStartTime(),
+                        subject.getStartTime(),
+                        subject.getClassroom(),
+                        subject.getCredit(),
+                        subject.getGrade(),
+                        subject.getTarget(),
+                        subject.getDivision().name()))
             .collect(Collectors.toList());
 
     return new TimeTableResponseDTO.MyTimeTableDTO(subjects);
@@ -288,7 +294,18 @@ public class TimeTableService {
       String pushTitle = "오늘의 수업";
       String pushBody =
           todaySubjects.stream()
-              .map(ts -> ts.getSubject().getSubject() + " (" + ts.getSubject().getTime() + ")")
+              .map(
+                  ts ->
+                      ts.getSubject().getSubject()
+                          + " ("
+                          + ts.getSubject().getDay()
+                          + ")"
+                          + " ("
+                          + ts.getSubject().getStartTime()
+                          + ")"
+                          + " ("
+                          + ts.getSubject().getEndTime()
+                          + ")")
               .collect(Collectors.joining(", "));
 
       List<UserDeviceToken> tokens = userDeviceTokenRepository.findAllByUser(user);
