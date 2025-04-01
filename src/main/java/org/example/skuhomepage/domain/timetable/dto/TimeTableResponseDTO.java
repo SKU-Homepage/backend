@@ -11,17 +11,17 @@ public class TimeTableResponseDTO {
 
   public record TodayTimeTableDTO(
       @Schema(description = "id", example = "1") Long id,
-      @Schema(description = "수업 시간", example = "1교시") // 크롤링 값에 따라 example 변경 될 수도 있음
-          String time,
       @Schema(description = "수업 이름", example = "자료구조") String subject,
       @Schema(description = "장소", example = "북악관 608호") String classroom,
-      @Schema(description = "수업 시간", example = "9:00 -11:45") String classtime) {}
+      @Schema(description = "수업 요일", example = "월") String day,
+      @Schema(description = "수업 시작 시간", example = "10:00") String startTime,
+      @Schema(description = "수업 종료 시간", example = "11:30") String endTime) {}
 
   public record MyTimeTableDTO(
       @ArraySchema(
               schema = @Schema(implementation = MySubjectDTO.class),
               arraySchema = @Schema(description = "과목 리스트"))
-          List<MySubjectDTO> subjects) {}
+          List<TimeTableDTO> subjects) {}
 
   public record TimeTableListDTO(
       @ArraySchema(
@@ -39,7 +39,9 @@ public class TimeTableResponseDTO {
       @Schema(description = "과목 id", example = "1") Long subjectId,
       @Schema(description = "과목 이름", example = "자료구조") String subject,
       @Schema(description = "교수 이름", example = "이지영") String professor,
-      @Schema(description = "수업 시간", example = "월 1교시") String time,
+      @Schema(description = "수업 요일", example = "월") String day,
+      @Schema(description = "수업 시작 시간", example = "10:00") String startTime,
+      @Schema(description = "수업 종료 시간", example = "11:30") String endTime,
       @Schema(description = "장소", example = "북악관 608호") String classroom,
       @Schema(description = "학점", example = "3") int credit,
       @Schema(description = "학년", example = "1") int grade,
@@ -50,7 +52,9 @@ public class TimeTableResponseDTO {
           subject.getId(),
           subject.getSubject(),
           subject.getProfessor(),
-          subject.getTime(),
+          subject.getDay(),
+          subject.getStartTime(),
+          subject.getEndTime(),
           subject.getClassroom(),
           subject.getCredit(),
           subject.getGrade(),
@@ -62,12 +66,14 @@ public class TimeTableResponseDTO {
   public record MySubjectDTO(
       @Schema(description = "과목 id", example = "1") Long subjectId,
       @Schema(description = "과목 이름", example = "자료구조") String subject,
-      @Schema(description = "수업 시간", example = "월 1교시") String time,
+      @Schema(description = "수업 요일", example = "월") String day,
+      @Schema(description = "수업 시작 시간", example = "10:00") String startTime,
+      @Schema(description = "수업 종료 시간", example = "11:30") String endTime,
       @Schema(description = "장소", example = "북악관 608호") String classroom) {}
 
   public record TodayTimeTableListDTO(
       @ArraySchema(
               schema = @Schema(implementation = TodayTimeTableDTO.class),
               arraySchema = @Schema(description = "과목 리스트"))
-          List<TodayTimeTableDTO> timeTables) {}
+          List<TimeTableDTO> timeTables) {}
 }

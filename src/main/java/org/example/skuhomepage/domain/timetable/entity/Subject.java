@@ -34,9 +34,17 @@ public class Subject extends BaseTimeEntity {
   @Column(nullable = false)
   private String subject;
 
-  @Comment("수업 시간")
+  @Comment("요일")
   @Column(nullable = false)
-  private String time;
+  private String day;
+
+  @Comment("시작시간")
+  @Column(nullable = false)
+  private String startTime;
+
+  @Comment("종료시간")
+  @Column(nullable = false)
+  private String endTime;
 
   @Comment("담당 교수")
   @Column(nullable = false)

@@ -46,17 +46,23 @@ public class TimeTableService {
             .findByUser_Account(userDetails.getUsername())
             .orElseThrow(() -> new GeneralException(TimeTableErrorStatus.TIME_TABLE_NOT_FOUND));
 
-    List<TodayTimeTableDTO> todaySubjects =
+    List<TimeTableResponseDTO.TimeTableDTO> todaySubjects =
         timeTable.getTimeTableSubjects().stream()
             .filter(ts -> isSubjectOnToday(ts.getSubject(), today))
             .map(
                 ts ->
-                    new TodayTimeTableDTO(
-                        ts.getSubject().getId(),
-                        ts.getSubject().getSubject(),
-                        ts.getSubject().getTime(),
-                        ts.getSubject().getClassroom(),
-                        ts.getSubject().getTime()))
+                    new TimeTableResponseDTO.TimeTableDTO(
+                            ts.getSubject().getId(),
+                            ts.getSubject().getSubject(),
+                            ts.getSubject().getProfessor(),
+                            ts.getSubject().getDay(),
+                            ts.getSubject().getStartTime(),
+                            ts.getSubject().getStartTime(),
+                            ts.getSubject().getClassroom(),
+                            ts.getSubject().getCredit(),
+                            ts.getSubject().getGrade(),
+                            ts.getSubject().getTarget(),
+                            ts.getSubject().getDivision().name()))
             .collect(Collectors.toList());
     return new TimeTableResponseDTO.TodayTimeTableListDTO(todaySubjects);
   }
@@ -67,16 +73,23 @@ public class TimeTableService {
             .findByUser_Account(userDetails.getUsername())
             .orElseThrow(() -> new GeneralException(TimeTableErrorStatus.TIMETABLE_NOT_FOUND));
 
-    List<TimeTableResponseDTO.MySubjectDTO> subjects =
+    List<TimeTableResponseDTO.TimeTableDTO> subjects =
         timeTable.getTimeTableSubjects().stream()
             .map(
                 ts ->
-                    new TimeTableResponseDTO.MySubjectDTO(
-                        ts.getSubject().getId(),
-                        ts.getSubject().getSubject(),
-                        ts.getSubject().getTime(),
-                        ts.getSubject().getClassroom()))
-            .collect(Collectors.toList());
+                        new TimeTableResponseDTO.TimeTableDTO(
+                                ts.getSubject().getId(),
+                                ts.getSubject().getSubject(),
+                                ts.getSubject().getProfessor(),
+                                ts.getSubject().getDay(),
+                                ts.getSubject().getStartTime(),
+                                ts.getSubject().getStartTime(),
+                                ts.getSubject().getClassroom(),
+                                ts.getSubject().getCredit(),
+                                ts.getSubject().getGrade(),
+                                ts.getSubject().getTarget(),
+                                ts.getSubject().getDivision().name()))
+                .collect(Collectors.toList());
 
     return new MyTimeTableDTO(subjects);
   }
@@ -137,7 +150,9 @@ public class TimeTableService {
         subjectRepository.save(
             Subject.builder()
                 .subject(request.getSubject())
-                .time(request.getTime())
+                .day(request.getDay())
+                .endTime(request.getEndTime())
+                .startTime(request.getStartTime())
                 .classroom(request.getClassroom())
                 .credit(0)
                 .professor("")
@@ -178,8 +193,6 @@ public class TimeTableService {
   }
 
   private boolean isSubjectOnToday(Subject subject, DayOfWeek today) {
-    String time = subject.getTime();
-
     Map<String, DayOfWeek> dayMapping =
         Map.of(
             "월", DayOfWeek.MONDAY,
@@ -188,7 +201,6 @@ public class TimeTableService {
             "목", DayOfWeek.THURSDAY,
             "금", DayOfWeek.FRIDAY);
 
-    String firstChar = time.substring(0, 1);
-    return dayMapping.getOrDefault(firstChar, null) == today;
+    return dayMapping.getOrDefault(subject.getDay(), null) == today;
   }
 }

@@ -13,8 +13,16 @@ public class TimeTableRequestDTO {
     private String subject;
 
     @NotBlank
-    @Schema(description = "수업 시간", example = "월 1교시")
-    private String time;
+    @Schema(description = "수업 요일", example = "월")
+    private String day;
+
+    @NotBlank
+    @Schema(description = "수업 시작 시간", example = "9:00")
+    private String startTime;
+
+    @NotBlank
+    @Schema(description = "수업 종료 시간", example = "10:15")
+    private String endTime;
 
     @NotBlank
     @Schema(description = "장소", example = "북악관 608호")
