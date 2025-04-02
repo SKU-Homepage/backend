@@ -97,11 +97,8 @@ public class MyPageService {
             .secure(true)
             .sameSite("None")
             .path("/")
-            .maxAge(Duration.ofDays(7));
-
-    if (!env.equals("0")) {
-      cookieBuilder.domain("skuniv.ac.kr");
-    }
+            .maxAge(Duration.ofDays(7))
+            .domain(".skuniv.co.kr");
 
     ResponseCookie cookie = cookieBuilder.build();
 
