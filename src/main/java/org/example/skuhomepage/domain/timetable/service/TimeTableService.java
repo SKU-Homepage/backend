@@ -98,7 +98,7 @@ public class TimeTableService {
                         ts.getSubject().getProfessor(),
                         ts.getSubject().getDay(),
                         ts.getSubject().getStartTime(),
-                        ts.getSubject().getStartTime(),
+                        ts.getSubject().getEndTime(),
                         ts.getSubject().getClassroom(),
                         ts.getSubject().getCredit(),
                         ts.getSubject().getGrade(),
