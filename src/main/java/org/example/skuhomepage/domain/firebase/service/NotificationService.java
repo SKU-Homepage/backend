@@ -3,9 +3,15 @@ package org.example.skuhomepage.domain.firebase.service;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.example.skuhomepage.domain.firebase.dto.NotificationRequestDTO;
 import org.example.skuhomepage.domain.firebase.dto.NotificationResponseDTO;
 import org.example.skuhomepage.domain.firebase.entity.Alarm;
 import org.example.skuhomepage.domain.firebase.repository.AlarmRepository;
+import org.example.skuhomepage.domain.mypage.entity.User;
+import org.example.skuhomepage.domain.mypage.exception.MyPageErrorStatus;
+import org.example.skuhomepage.domain.mypage.repository.UserRepository;
+import org.example.skuhomepage.global.exception.GeneralException;
+import org.example.skuhomepage.global.security.CustomUserDetails;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
@@ -15,13 +21,16 @@ import com.google.firebase.messaging.Message;
 import com.google.firebase.messaging.Notification;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class NotificationService {
 
   private final FirebaseMessaging firebaseMessaging;
   private final AlarmRepository alarmRepository;
+  private final UserRepository userRepository;
 
   public void sendPush(String token, String title, String body, String redirectPath) {
     Message message =
@@ -53,5 +62,22 @@ public class NotificationService {
             .collect(Collectors.toList());
 
     return new NotificationResponseDTO.NotificationListDTO(notificationDTOList);
+  }
+
+  public void deleteAlarm(
+      NotificationRequestDTO.deleteAlarmDTO request, CustomUserDetails userDetails) {
+    User user =
+        userRepository
+            .findByAccount(userDetails.getUsername())
+            .orElseThrow(() -> new GeneralException(MyPageErrorStatus.USER_NOT_FOUND));
+
+    List<Long> alarmIds = request.getAlarmIds();
+
+    List<Alarm> alarmsToDelete =
+        alarmRepository.findAllById(alarmIds).stream()
+            .filter(alarm -> alarm.getUser().getId().equals(user.getId()))
+            .collect(Collectors.toList());
+
+    alarmRepository.deleteAll(alarmsToDelete);
   }
 }

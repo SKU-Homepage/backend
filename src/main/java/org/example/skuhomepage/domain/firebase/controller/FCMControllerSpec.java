@@ -1,5 +1,6 @@
 package org.example.skuhomepage.domain.firebase.controller;
 
+import org.example.skuhomepage.domain.firebase.dto.NotificationRequestDTO;
 import org.example.skuhomepage.domain.firebase.dto.NotificationResponseDTO;
 import org.example.skuhomepage.domain.firebase.dto.TokenRequestDTO;
 import org.example.skuhomepage.domain.firebase.dto.TopicRequestDTO;
@@ -52,4 +53,11 @@ public interface FCMControllerSpec {
   ApiResponse<NotificationResponseDTO.keywordDTO> topicList(
       @Parameter(description = "사용자 정보", hidden = true) @AuthenticationPrincipal
           CustomUserDetails userDetails);
+
+  @DeleteMapping("/alarm/delete")
+  @Operation(summary = "알람 삭제", description = "알람을 삭제하는 api")
+  ApiResponse<Void> alarmDelete(
+      @Parameter(description = "삭제할 알람의 id") @RequestBody
+          NotificationRequestDTO.deleteAlarmDTO request,
+      @AuthenticationPrincipal CustomUserDetails userDetails);
 }

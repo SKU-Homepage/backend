@@ -1,5 +1,6 @@
 package org.example.skuhomepage.domain.firebase.controller;
 
+import org.example.skuhomepage.domain.firebase.dto.NotificationRequestDTO;
 import org.example.skuhomepage.domain.firebase.dto.NotificationResponseDTO;
 import org.example.skuhomepage.domain.firebase.dto.TokenRequestDTO;
 import org.example.skuhomepage.domain.firebase.dto.TopicRequestDTO;
@@ -67,5 +68,12 @@ public class FCMController implements FCMControllerSpec {
   public ApiResponse<NotificationResponseDTO.keywordDTO> topicList(CustomUserDetails userDetails) {
     NotificationResponseDTO.keywordDTO result = keywordService.getUserKeywords(userDetails);
     return ApiResponse.onSuccess(result);
+  }
+
+  @Override
+  public ApiResponse<Void> alarmDelete(
+      NotificationRequestDTO.deleteAlarmDTO request, CustomUserDetails userDetails) {
+    notificationService.deleteAlarm(request, userDetails);
+    return ApiResponse.onSuccess(null);
   }
 }

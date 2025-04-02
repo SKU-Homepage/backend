@@ -1,9 +1,13 @@
 package org.example.skuhomepage.domain.calendar.service;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.YearMonth;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
+
+import jakarta.transaction.Transactional;
 
 import org.example.skuhomepage.domain.calendar.dto.DateTimeDTO;
 import org.example.skuhomepage.domain.calendar.dto.ScheduleResponseDTO;
@@ -13,10 +17,17 @@ import org.example.skuhomepage.domain.calendar.dto.UserScheduleResponseDTO.UserS
 import org.example.skuhomepage.domain.calendar.entity.UserSchedule;
 import org.example.skuhomepage.domain.calendar.exception.CalendarErrorStatus;
 import org.example.skuhomepage.domain.calendar.repository.UserScheduleRepository;
+import org.example.skuhomepage.domain.firebase.entity.Alarm;
+import org.example.skuhomepage.domain.firebase.entity.NotificationType;
+import org.example.skuhomepage.domain.firebase.entity.UserDeviceToken;
+import org.example.skuhomepage.domain.firebase.repository.AlarmRepository;
+import org.example.skuhomepage.domain.firebase.repository.UserDeviceTokenRepository;
+import org.example.skuhomepage.domain.firebase.service.NotificationService;
 import org.example.skuhomepage.domain.mypage.entity.User;
 import org.example.skuhomepage.domain.mypage.exception.MyPageErrorStatus;
 import org.example.skuhomepage.domain.mypage.repository.UserRepository;
 import org.example.skuhomepage.global.exception.GeneralException;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;
@@ -28,6 +39,9 @@ public class UserScheduleService {
   private final UserScheduleRepository userScheduleRepository;
   private final UserRepository userRepository;
   private final SkuCalendarService skuCalendarService;
+  private final UserDeviceTokenRepository userDeviceTokenRepository;
+  private final AlarmRepository alarmRepository;
+  private final NotificationService notificationService;
 
   public List<UserScheduleDTO> getUserSchedule(int year, int month, int day, long userId) {
 
@@ -170,6 +184,52 @@ public class UserScheduleService {
     }
     if (start.isAfter(end)) {
       throw new GeneralException(CalendarErrorStatus.SCHEDULE_DATE_RANGE_BAD_REQUEST);
+    }
+  }
+
+  @Scheduled(cron = "0 0 8 * * ?") // 매일 오전 8시에 실행
+  @Transactional
+  public void sendDailyUserSchedulePush() {
+
+    List<User> allUsers = userRepository.findAll();
+
+    for (User user : allUsers) {
+      List<UserSchedule> todaySchedules =
+          userScheduleRepository.findAllByUserAndStartDateTimeBetween(
+              user, LocalDate.now().atStartOfDay(), LocalDate.now().plusDays(1).atStartOfDay());
+
+      if (todaySchedules.isEmpty()) continue;
+
+      String pushTitle = "오늘의 일정";
+      String pushBody =
+          todaySchedules.stream()
+              .map(
+                  sch ->
+                      sch.getTitle()
+                          + " ("
+                          + (sch.getIsAllDay()
+                              ? "하루 종일"
+                              : sch.getStartDateTime().toLocalTime()
+                                  + " ~ "
+                                  + sch.getEndDateTime().toLocalTime())
+                          + ")")
+              .collect(Collectors.joining(", "));
+
+      List<UserDeviceToken> tokens = userDeviceTokenRepository.findAllByUser(user);
+
+      for (UserDeviceToken token : tokens) {
+        notificationService.sendPush(token.getFcmToken(), pushTitle, pushBody, "/");
+
+        Alarm alarm =
+            Alarm.builder()
+                .user(user)
+                .title(pushTitle)
+                .content(pushBody)
+                .notificationType(NotificationType.CALENDAR)
+                .build();
+
+        alarmRepository.save(alarm);
+      }
     }
   }
 }

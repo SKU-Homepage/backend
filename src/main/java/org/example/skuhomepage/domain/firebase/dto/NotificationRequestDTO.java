@@ -8,7 +8,7 @@ import lombok.Getter;
 public class NotificationRequestDTO {
   @Getter
   @AllArgsConstructor
-  public static class AddSubjectDTO {
-    private List<Long> subjectIds;
+  public static class deleteAlarmDTO {
+    private List<Long> alarmIds;
   }
 }
