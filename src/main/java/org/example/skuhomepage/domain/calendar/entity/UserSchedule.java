@@ -35,7 +35,7 @@ public class UserSchedule {
   private String labelColor;
 
   @ManyToOne
-  @JoinColumn(name = "user_id")
+  @JoinColumn(name = "user_id", nullable = false)
   private User user;
 
   public boolean getIsAllDay() {
