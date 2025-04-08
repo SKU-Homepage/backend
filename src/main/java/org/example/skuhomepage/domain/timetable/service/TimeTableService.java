@@ -297,15 +297,13 @@ public class TimeTableService {
               .map(
                   ts ->
                       ts.getSubject().getSubject()
-                          + " ("
+                          + " "
                           + ts.getSubject().getDay()
-                          + ")"
-                          + " ("
+                          + " "
                           + ts.getSubject().getStartTime()
-                          + ")"
-                          + " ("
+                          + "~"
                           + ts.getSubject().getEndTime()
-                          + ")")
+                          + "분 수업이 있습니다")
               .collect(Collectors.joining(", "));
 
       List<UserDeviceToken> tokens = userDeviceTokenRepository.findAllByUser(user);

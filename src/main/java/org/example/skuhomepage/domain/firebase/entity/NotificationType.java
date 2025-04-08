@@ -4,5 +4,13 @@ public enum NotificationType {
   NOTICE,
   EC_NOTICE,
   TIMETABLE,
-  CALENDAR
+  CALENDAR;
+
+  public String getRedirectUrl() {
+    return switch (this) {
+      case NOTICE, EC_NOTICE -> "/notice";
+      case CALENDAR -> "/calendar";
+      case TIMETABLE -> "/schedule";
+    };
+  }
 }

@@ -76,4 +76,11 @@ public class FCMController implements FCMControllerSpec {
     notificationService.deleteAlarm(request, userDetails);
     return ApiResponse.onSuccess(null);
   }
+
+  @Override
+  public ApiResponse<NotificationResponseDTO.alarmDTO> getAlarm(
+      CustomUserDetails userDetails, Long id) {
+    NotificationResponseDTO.alarmDTO result = notificationService.getAlarm(userDetails, id);
+    return ApiResponse.onSuccess(result);
+  }
 }

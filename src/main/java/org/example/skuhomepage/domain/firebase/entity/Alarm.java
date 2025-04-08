@@ -12,6 +12,7 @@ import lombok.*;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Builder
+@Setter
 public class Alarm extends BaseTimeEntity {
 
   @Id @GeneratedValue private Long id;
@@ -30,4 +31,7 @@ public class Alarm extends BaseTimeEntity {
   private NotificationType notificationType;
 
   private String redirectUrl;
+
+  @Column(name = "is_read")
+  private boolean read;
 }

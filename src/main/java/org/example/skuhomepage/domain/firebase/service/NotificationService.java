@@ -58,7 +58,11 @@ public class NotificationService {
             .map(
                 notification ->
                     new NotificationResponseDTO.NotificationDTO(
-                        notification.getTitle(), notification.getNotificationType().name()))
+                        notification.getId(),
+                        notification.getContent(),
+                        notification.getNotificationType().getRedirectUrl(),
+                        notification.getCreatedDate(),
+                        notification.isRead()))
             .collect(Collectors.toList());
 
     return new NotificationResponseDTO.NotificationListDTO(notificationDTOList);
@@ -79,5 +83,16 @@ public class NotificationService {
             .collect(Collectors.toList());
 
     alarmRepository.deleteAll(alarmsToDelete);
+  }
+
+  public NotificationResponseDTO.alarmDTO getAlarm(CustomUserDetails userDetails, Long alarmId) {
+    Alarm alarm =
+        alarmRepository
+            .findByIdAndUser_Account(alarmId, userDetails.getUsername())
+            .orElseThrow(() -> new RuntimeException("해당 알림을 찾을 수 없습니다."));
+
+    if (!alarm.isRead()) alarm.setRead(true);
+
+    return new NotificationResponseDTO.alarmDTO("/notice");
   }
 }

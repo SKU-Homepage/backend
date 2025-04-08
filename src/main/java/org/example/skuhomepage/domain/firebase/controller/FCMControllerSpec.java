@@ -60,4 +60,11 @@ public interface FCMControllerSpec {
       @Parameter(description = "삭제할 알람의 id") @RequestBody
           NotificationRequestDTO.deleteAlarmDTO request,
       @AuthenticationPrincipal CustomUserDetails userDetails);
+
+  @GetMapping("/alarm/get/{id}")
+  @Operation(summary = "알람 개별 조회", description = "알람을 개별 조회 하는 api")
+  ApiResponse<NotificationResponseDTO.alarmDTO> getAlarm(
+      @Parameter(description = "사용자 정보", hidden = true) @AuthenticationPrincipal
+          CustomUserDetails userDetails,
+      @PathVariable Long id);
 }
