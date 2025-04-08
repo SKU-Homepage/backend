@@ -271,7 +271,7 @@ public class TimeTableService {
     return dayMapping.getOrDefault(subject.getDay(), null) == today;
   }
 
-  @Scheduled(cron = "0 */10 * * * ?")// 매일 오전 8시에 실행
+  @Scheduled(cron = "0 */10 * * * ?") // 매일 오전 8시에 실행
   @Transactional
   public void sendDailyTimeTablePush() {
 
