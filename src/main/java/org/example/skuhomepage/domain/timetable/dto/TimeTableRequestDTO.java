@@ -7,6 +7,7 @@ import jakarta.validation.constraints.NotBlank;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 public class TimeTableRequestDTO {
   @Getter
@@ -36,5 +37,14 @@ public class TimeTableRequestDTO {
   @AllArgsConstructor
   public static class AddSubjectDTO {
     private List<Long> subjectIds;
+  }
+
+  @AllArgsConstructor
+  @NoArgsConstructor
+  public static class TimeTableSubjectDTO {
+    private String subjectName;
+    private String day;
+    private String startTime;
+    private String endTime;
   }
 }

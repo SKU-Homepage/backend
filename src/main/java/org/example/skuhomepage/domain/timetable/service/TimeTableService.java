@@ -1,13 +1,13 @@
 package org.example.skuhomepage.domain.timetable.service;
 
 import java.time.DayOfWeek;
+import java.time.Duration;
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-
-import jakarta.transaction.Transactional;
 
 import org.example.skuhomepage.domain.firebase.entity.Alarm;
 import org.example.skuhomepage.domain.firebase.entity.NotificationType;
@@ -17,6 +17,7 @@ import org.example.skuhomepage.domain.firebase.repository.UserDeviceTokenReposit
 import org.example.skuhomepage.domain.firebase.service.NotificationService;
 import org.example.skuhomepage.domain.mypage.entity.User;
 import org.example.skuhomepage.domain.mypage.repository.UserRepository;
+import org.example.skuhomepage.domain.timetable.dto.TimeTableRequestDTO;
 import org.example.skuhomepage.domain.timetable.dto.TimeTableRequestDTO.selfSubjectDTO;
 import org.example.skuhomepage.domain.timetable.dto.TimeTableResponseDTO;
 import org.example.skuhomepage.domain.timetable.dto.TimeTableResponseDTO.AddSubjectDTO;
@@ -36,14 +37,21 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class TimeTableService {
   private final SubjectRepository subjectRepository;
   private final TimeTableRepository timeTableRepository;
@@ -52,6 +60,8 @@ public class TimeTableService {
   private final UserDeviceTokenRepository userDeviceTokenRepository;
   private final NotificationService notificationService;
   private final AlarmRepository alarmRepository;
+  private final RedisTemplate redisTemplate;
+  private ObjectMapper objectMapper;
 
   public TimeTableResponseDTO.TodayTimeTableListDTO getTodayTimeTable(UserDetails userDetails) {
     DayOfWeek today = LocalDate.now().getDayOfWeek();
@@ -271,56 +281,150 @@ public class TimeTableService {
     return dayMapping.getOrDefault(subject.getDay(), null) == today;
   }
 
-  @Scheduled(cron = "0 0 8 * * ?") // 매일 오전 8시에 실행
-  @Transactional
-  public void sendDailyTimeTablePush() {
-
-    List<User> allUsers = userRepository.findAll();
-
+  @Scheduled(cron = "0 23 20 * * ?")
+  public void cacheTodayTimeTables() {
     DayOfWeek today = LocalDate.now().getDayOfWeek();
 
+    List<User> allUsers = userRepository.findAll();
     for (User user : allUsers) {
-      TimeTable timeTable = timeTableRepository.findByUser_Account(user.getAccount()).orElse(null);
+      TimeTable timeTable =
+          timeTableRepository.findByUserAccountWithSubjects(user.getAccount()).orElse(null);
 
       if (timeTable == null) continue;
 
-      List<TimeTableSubject> todaySubjects =
+      List<TimeTableRequestDTO.TimeTableSubjectDTO> dtos =
           timeTable.getTimeTableSubjects().stream()
-              .filter(ts -> isSubjectOnToday(ts.getSubject(), today))
-              .collect(Collectors.toList());
-
-      if (todaySubjects.isEmpty()) continue;
-
-      String pushTitle = "오늘의 수업";
-      String pushBody =
-          todaySubjects.stream()
+              .filter(ts -> ts.getSubject().getDay().equals(today))
               .map(
                   ts ->
-                      ts.getSubject().getSubject()
-                          + " "
-                          + ts.getSubject().getDay()
-                          + " "
-                          + ts.getSubject().getStartTime()
-                          + "~"
-                          + ts.getSubject().getEndTime()
-                          + "분 수업이 있습니다")
-              .collect(Collectors.joining(", "));
+                      new TimeTableRequestDTO.TimeTableSubjectDTO(
+                          ts.getSubject().getSubject(),
+                          ts.getSubject().getDay().toString(),
+                          ts.getSubject().getStartTime().toString(),
+                          ts.getSubject().getEndTime().toString()))
+              .collect(Collectors.toList());
 
-      List<UserDeviceToken> tokens = userDeviceTokenRepository.findAllByUser(user);
-
-      for (UserDeviceToken token : tokens) {
-        notificationService.sendPush(token.getFcmToken(), pushTitle, pushBody, "/");
-
-        Alarm alarm =
-            Alarm.builder()
-                .user(user)
-                .title(pushTitle)
-                .content(pushBody)
-                .notificationType(NotificationType.NOTICE)
-                .build();
-
-        alarmRepository.save(alarm);
+      if (!dtos.isEmpty()) { // ✅ 변수 이름 수정됨
+        try {
+          String json = objectMapper.writeValueAsString(dtos);
+          String key = "timetable:" + user.getId();
+          redisTemplate.opsForValue().set(key, json, Duration.ofHours(24));
+        } catch (JsonProcessingException e) {
+          log.error("Redis 저장 실패: {}", e.getMessage());
+        }
       }
     }
+
+    log.info("오늘 수업 Redis 저장 완료");
+  }
+
+  @Scheduled(cron = "0 15,45 * * * ?")
+  public void sendClassReminder() {
+    LocalTime targetTime = LocalTime.now().plusMinutes(15);
+    log.info(" [수업 알림] {} 기준으로 15분 뒤 수업 푸시 알림 실행", LocalTime.now());
+
+    List<User> allUsers = userRepository.findAll();
+    for (User user : allUsers) {
+      String redisKey = "timetable:" + user.getId();
+      String json = (String) redisTemplate.opsForValue().get(redisKey);
+
+      if (json == null) {
+        log.debug(" [{}] 유저의 시간표 데이터가 Redis에 없음 (key: {})", user.getAccount(), redisKey);
+        continue;
+      }
+
+      try {
+        List<TimeTableSubject> subjects = objectMapper.readValue(json, new TypeReference<>() {});
+        List<TimeTableSubject> soonSubjects =
+            subjects.stream()
+                .filter(ts -> LocalTime.parse(ts.getSubject().getStartTime()).equals(targetTime))
+                .collect(Collectors.toList());
+
+        if (soonSubjects.isEmpty()) {
+          log.debug(" [{}] 유저의 15분 뒤 수업 없음", user.getAccount());
+          continue;
+        }
+
+        String body =
+            soonSubjects.stream()
+                .map(ts -> ts.getSubject().getSubject() + " 수업이 15분 후 시작됩니다.")
+                .collect(Collectors.joining(", "));
+
+        log.info(" [{}] 유저에게 수업 알림 전송: {}", user.getAccount(), body);
+
+        List<UserDeviceToken> tokens = userDeviceTokenRepository.findAllByUser(user);
+        for (UserDeviceToken token : tokens) {
+          notificationService.sendPush(token.getFcmToken(), "수업 알림", body, "/schedule");
+
+          alarmRepository.save(
+              Alarm.builder()
+                  .user(user)
+                  .title("수업 알림")
+                  .content(body)
+                  .notificationType(NotificationType.TIMETABLE)
+                  .build());
+        }
+
+      } catch (JsonProcessingException e) {
+        log.error(" [{}] Redis 파싱 실패: {}", user.getAccount(), e.getMessage());
+      }
+    }
+
+    log.info("✅ [수업 알림] {} 실행 완료", LocalTime.now());
   }
 }
+
+//  @Scheduled(cron = "0 0 8 * * ?") // 매일 오전 8시에 실행
+//  @Transactional
+//  public void sendDailyTimeTablePush() {
+//
+//    List<User> allUsers = userRepository.findAll();
+//
+//    DayOfWeek today = LocalDate.now().getDayOfWeek();
+//
+//    for (User user : allUsers) {
+//      TimeTable timeTable =
+// timeTableRepository.findByUser_Account(user.getAccount()).orElse(null);
+//
+//      if (timeTable == null) continue;
+//
+//      List<TimeTableSubject> todaySubjects =
+//          timeTable.getTimeTableSubjects().stream()
+//              .filter(ts -> isSubjectOnToday(ts.getSubject(), today))
+//              .collect(Collectors.toList());
+//
+//      if (todaySubjects.isEmpty()) continue;
+//
+//      String pushTitle = "오늘의 수업";
+//      String pushBody =
+//          todaySubjects.stream()
+//              .map(
+//                  ts ->
+//                      ts.getSubject().getSubject()
+//                          + " "
+//                          + ts.getSubject().getDay()
+//                          + " "
+//                          + ts.getSubject().getStartTime()
+//                          + "~"
+//                          + ts.getSubject().getEndTime()
+//                          + "분 수업이 있습니다")
+//              .collect(Collectors.joining(", "));
+//
+//      List<UserDeviceToken> tokens = userDeviceTokenRepository.findAllByUser(user);
+//
+//      for (UserDeviceToken token : tokens) {
+//        notificationService.sendPush(token.getFcmToken(), pushTitle, pushBody, "/");
+//
+//        Alarm alarm =
+//            Alarm.builder()
+//                .user(user)
+//                .title(pushTitle)
+//                .content(pushBody)
+//                .notificationType(NotificationType.NOTICE)
+//                .build();
+//
+//        alarmRepository.save(alarm);
+//      }
+//    }
+//  }
+// }

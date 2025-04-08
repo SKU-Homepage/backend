@@ -12,7 +12,7 @@ import lombok.Getter;
 public enum FirebaseErrorStatus implements BaseErrorCode {
   KEYWORD_NOT_VALID(HttpStatus.BAD_REQUEST, "KEYWORD404001", "중복된 키워드입니다"),
   KEYWORD_NOT_FOUND(HttpStatus.NOT_FOUND, "KEYWORD404002", "존재하지 않는 키워드입니다."),
-  ALARM_NOT_FOUND(HttpStatus.NOT_FOUND,"ALARM404001","존재하지 않는 알람입니다");
+  ALARM_NOT_FOUND(HttpStatus.NOT_FOUND, "ALARM404001", "존재하지 않는 알람입니다");
 
   private final HttpStatus httpStatus;
   private final String code;
