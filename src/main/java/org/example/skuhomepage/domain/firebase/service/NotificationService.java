@@ -3,9 +3,12 @@ package org.example.skuhomepage.domain.firebase.service;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import jakarta.transaction.Transactional;
+
 import org.example.skuhomepage.domain.firebase.dto.NotificationRequestDTO;
 import org.example.skuhomepage.domain.firebase.dto.NotificationResponseDTO;
 import org.example.skuhomepage.domain.firebase.entity.Alarm;
+import org.example.skuhomepage.domain.firebase.exception.FirebaseErrorStatus;
 import org.example.skuhomepage.domain.firebase.repository.AlarmRepository;
 import org.example.skuhomepage.domain.mypage.entity.User;
 import org.example.skuhomepage.domain.mypage.exception.MyPageErrorStatus;
@@ -85,11 +88,12 @@ public class NotificationService {
     alarmRepository.deleteAll(alarmsToDelete);
   }
 
+  @Transactional
   public NotificationResponseDTO.alarmDTO getAlarm(CustomUserDetails userDetails, Long alarmId) {
     Alarm alarm =
         alarmRepository
             .findByIdAndUser_Account(alarmId, userDetails.getUsername())
-            .orElseThrow(() -> new RuntimeException("해당 알림을 찾을 수 없습니다."));
+            .orElseThrow(() -> new GeneralException(FirebaseErrorStatus.ALARM_NOT_FOUND));
 
     if (!alarm.isRead()) alarm.setRead(true);
 
