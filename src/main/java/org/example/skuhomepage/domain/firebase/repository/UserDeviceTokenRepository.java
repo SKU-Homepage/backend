@@ -13,4 +13,6 @@ public interface UserDeviceTokenRepository extends JpaRepository<UserDeviceToken
   Optional<UserDeviceToken> findByFcmToken(String fcmToken);
 
   List<UserDeviceToken> findAllByUser(User user);
+
+  Optional<UserDeviceToken> findTopByUserIdOrderByIdDesc(Long userId);
 }

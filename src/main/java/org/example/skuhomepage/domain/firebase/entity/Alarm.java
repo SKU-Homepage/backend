@@ -15,7 +15,10 @@ import lombok.*;
 @Setter
 public class Alarm extends BaseTimeEntity {
 
-  @Id @GeneratedValue private Long id;
+  @Id
+  @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "alarm_seq_generator")
+  @SequenceGenerator(name = "alarm_seq_generator", sequenceName = "ALARM_SEQ", allocationSize = 50)
+  private Long id;
 
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(nullable = false)

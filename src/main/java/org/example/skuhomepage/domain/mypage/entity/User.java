@@ -1,11 +1,11 @@
 package org.example.skuhomepage.domain.mypage.entity;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import java.util.ArrayList;
+import java.util.List;
 
+import jakarta.persistence.*;
+
+import org.example.skuhomepage.domain.firebase.entity.UserDeviceToken;
 import org.example.skuhomepage.global.common.BaseTimeEntity;
 
 import lombok.AccessLevel;
@@ -71,4 +71,7 @@ public class User extends BaseTimeEntity {
     this.agreement = agreement;
     this.registered = registered;
   }
+
+  @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+  private List<UserDeviceToken> userDeviceTokens = new ArrayList<>();
 }

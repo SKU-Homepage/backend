@@ -1,5 +1,6 @@
 package org.example.skuhomepage.domain.calendar.repository;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -7,6 +8,7 @@ import org.example.skuhomepage.domain.calendar.entity.UserSchedule;
 import org.example.skuhomepage.domain.mypage.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 public interface UserScheduleRepository extends JpaRepository<UserSchedule, Long> {
 
@@ -28,4 +30,15 @@ public interface UserScheduleRepository extends JpaRepository<UserSchedule, Long
 
   List<UserSchedule> findAllByUserAndStartDateTimeBetween(
       User user, LocalDateTime start, LocalDateTime end);
+
+  @Query(
+      "select distinct us.user.id from UserSchedule us " + "where DATE(us.startDateTime) = :today")
+  List<Long> findUserIdsHavingTodaySchedule(LocalDate today);
+
+  @Query(
+      "SELECT us FROM UserSchedule us JOIN FETCH us.user u WHERE u.id IN :userIds AND us.startDateTime < :endOfDay AND us.endDateTime > :startOfDay")
+  List<UserSchedule> findSchedulesByUsersInDateRange(
+      @Param("userIds") List<Long> userIds,
+      @Param("startOfDay") LocalDateTime startOfDay,
+      @Param("endOfDay") LocalDateTime endOfDay);
 }
