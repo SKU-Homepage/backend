@@ -7,6 +7,7 @@ import org.example.skuhomepage.domain.calendar.entity.UserSchedule;
 import org.example.skuhomepage.domain.mypage.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 public interface UserScheduleRepository extends JpaRepository<UserSchedule, Long> {
 
@@ -28,4 +29,16 @@ public interface UserScheduleRepository extends JpaRepository<UserSchedule, Long
 
   List<UserSchedule> findAllByUserAndStartDateTimeBetween(
       User user, LocalDateTime start, LocalDateTime end);
+
+  @Query(
+      "SELECT DISTINCT us FROM UserSchedule us "
+          + "JOIN FETCH us.user u "
+          + "LEFT JOIN FETCH u.userDeviceTokens "
+          + // User와 UserDeviceToken을 함께 로드
+          "WHERE us.user.id IN :userIds "
+          + "AND us.startDateTime >= :startOfDay AND us.startDateTime < :endOfDay")
+  List<UserSchedule> findSchedulesAndUsersAndTokensByUsersInDateRange(
+      @Param("userIds") List<Long> userIds,
+      @Param("startOfDay") LocalDateTime startOfDay,
+      @Param("endOfDay") LocalDateTime endOfDay);
 }

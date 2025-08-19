@@ -18,7 +18,6 @@ import org.example.skuhomepage.domain.calendar.entity.UserSchedule;
 import org.example.skuhomepage.domain.calendar.exception.CalendarErrorStatus;
 import org.example.skuhomepage.domain.calendar.repository.UserScheduleRepository;
 import org.example.skuhomepage.domain.firebase.entity.Alarm;
-import org.example.skuhomepage.domain.firebase.entity.NotificationType;
 import org.example.skuhomepage.domain.firebase.entity.UserDeviceToken;
 import org.example.skuhomepage.domain.firebase.repository.AlarmRepository;
 import org.example.skuhomepage.domain.firebase.repository.UserDeviceTokenRepository;
@@ -27,13 +26,15 @@ import org.example.skuhomepage.domain.mypage.entity.User;
 import org.example.skuhomepage.domain.mypage.exception.MyPageErrorStatus;
 import org.example.skuhomepage.domain.mypage.repository.UserRepository;
 import org.example.skuhomepage.global.exception.GeneralException;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StopWatch;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class UserScheduleService {
 
   private final UserScheduleRepository userScheduleRepository;
@@ -187,22 +188,41 @@ public class UserScheduleService {
     }
   }
 
-  @Scheduled(cron = "0 0 8 * * ?") // 매일 오전 8시에 실행
+  // @Scheduled(cron = "0 0 8 * * ?") // 매일 오전 8시에 실행
   @Transactional
-  public void sendDailyUserSchedulePush() {
+  public void sendDailyUserSchedulePush_Sync() {
+    StopWatch stopWatch = new StopWatch("Sync Push Notification");
+    log.info("동기 방식 푸시 알림 전송을 시작합니다...");
+    stopWatch.start("1. 데이터 조회");
 
-    List<User> allUsers = userRepository.findAll();
+    LocalDate today = LocalDate.now();
+    LocalDateTime startOfDay = today.atStartOfDay();
+    LocalDateTime endOfDay = today.plusDays(1).atStartOfDay();
 
-    for (User user : allUsers) {
-      List<UserSchedule> todaySchedules =
-          userScheduleRepository.findAllByUserAndStartDateTimeBetween(
-              user, LocalDate.now().atStartOfDay(), LocalDate.now().plusDays(1).atStartOfDay());
+    // 1. 먼저 조건에 맞는 User와 Schedule을 조회
+    List<User> usersWithSchedules =
+        userRepository.findUsersWithSchedulesForDate(startOfDay, endOfDay);
 
-      if (todaySchedules.isEmpty()) continue;
+    if (usersWithSchedules.isEmpty()) {
+      stopWatch.stop();
+      log.info("알림을 보낼 사용자가 없어 작업을 종료합니다. 소요 시간: {} ms", stopWatch.getTotalTimeMillis());
+      return;
+    }
+
+    // 2. 위에서 찾은 User들의 Token 정보를 추가로 조회 (IN 절 사용)
+    List<User> usersWithSchedulesAndTokens = userRepository.findUsersWithTokens(usersWithSchedules);
+    log.info("오늘 일정이 있는 사용자 {}명의 데이터를 모두 조회했습니다.", usersWithSchedulesAndTokens.size());
+    stopWatch.stop();
+
+    stopWatch.start("2. 알림 전송 및 저장 처리");
+    List<Alarm> alarmsToSave = new ArrayList<>();
+
+    // 이제 usersWithSchedulesAndTokens 리스트는 필요한 모든 정보를 가지고 있습니다.
+    for (User user : usersWithSchedulesAndTokens) {
 
       String pushTitle = "오늘의 일정";
       String pushBody =
-          todaySchedules.stream()
+          user.getSchedules().stream()
               .map(
                   sch ->
                       sch.getTitle()
@@ -215,21 +235,27 @@ public class UserScheduleService {
                           + ")")
               .collect(Collectors.joining(", "));
 
-      List<UserDeviceToken> tokens = userDeviceTokenRepository.findAllByUser(user);
-
-      for (UserDeviceToken token : tokens) {
+      for (UserDeviceToken token : user.getUserDeviceTokens()) {
         notificationService.sendPush(token.getFcmToken(), pushTitle, pushBody, "/");
-
-        Alarm alarm =
-            Alarm.builder()
-                .user(user)
-                .title(pushTitle)
-                .content(pushBody)
-                .notificationType(NotificationType.CALENDAR)
-                .build();
-
-        alarmRepository.save(alarm);
       }
     }
+
+    //      Alarm alarm =
+    //              Alarm.builder()
+    //                      .user(user)
+    //                      .title(pushTitle)
+    //                      .content(pushBody)
+    //                      .notificationType(NotificationType.CALENDAR)
+    //                      .build();
+    //      alarmsToSave.add(alarm);
+    //    }
+    //
+    //    // 4. 모든 알림을 DB에 한 번에 저장 (배치 INSERT)
+    //    alarmRepository.saveAll(alarmsToSave);
+
+    stopWatch.stop(); // <-- 전체 측정을 위해 여기서 한 번만 멈춥니다.
+    log.info("동기 방식 푸시 알림 전송 완료. 총 소요 시간: {} ms", stopWatch.getTotalTimeMillis());
+    // prettyPrint()는 여러 작업을 측정했을 때 유용하므로, 여기서는 getTotalTimeMillis()만 사용해도 충분합니다.
+    // log.info(stopWatch.prettyPrint());
   }
 }

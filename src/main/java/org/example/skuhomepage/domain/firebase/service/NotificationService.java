@@ -19,7 +19,6 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import com.google.firebase.messaging.FirebaseMessaging;
-import com.google.firebase.messaging.FirebaseMessagingException;
 import com.google.firebase.messaging.Message;
 import com.google.firebase.messaging.Notification;
 
@@ -43,12 +42,12 @@ public class NotificationService {
             .putData("redirect", redirectPath)
             .build();
 
-    try {
-      String response = firebaseMessaging.send(message);
-      System.out.println("푸시 알림이 전송되었습니다. 토큰: " + token + ": " + response);
-    } catch (FirebaseMessagingException e) {
-      System.err.println("푸시 알림 전송 실패: " + token + " - " + e.getMessage());
-    }
+    //    try {
+    //      String response = firebaseMessaging.send(message);
+    //      System.out.println("푸시 알림이 전송되었습니다. 토큰: " + token + ": " + response);
+    //    } catch (FirebaseMessagingException e) {
+    //      System.err.println("푸시 알림 전송 실패: " + token + " - " + e.getMessage());
+    //    }
   }
 
   public NotificationResponseDTO.NotificationListDTO getNotificationList(UserDetails userDetails) {
