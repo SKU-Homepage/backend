@@ -28,7 +28,7 @@ public class PushBatchConsumer {
   private final UserRepository userRepository;
   private final AlarmRepository alarmRepository;
   private final NotificationService notificationService;
-  // UserDeviceTokenRepository는 직접 필요 없어집니다.
+  private final JobTracker jobTracker;
 
   private static final Logger log = LoggerFactory.getLogger(PushBatchConsumer.class);
 
@@ -89,5 +89,7 @@ public class PushBatchConsumer {
 
     stopWatch.stop();
     log.info("Batch processing finished. Duration: {} ms", stopWatch.getTotalTimeMillis());
+
+    jobTracker.completeOne();
   }
 }

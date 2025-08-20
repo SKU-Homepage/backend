@@ -47,7 +47,8 @@ public class SecurityConfig {
                         "/swagger-resources/**",
                         "/webjars/**",
                         "/api/**",
-                        "/login/**")
+                        "/login/**",
+                        "/batch/alarmTest")
                     .permitAll()
                     .anyRequest()
                     .authenticated());

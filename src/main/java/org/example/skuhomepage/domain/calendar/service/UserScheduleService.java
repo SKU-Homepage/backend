@@ -193,7 +193,7 @@ public class UserScheduleService {
 
     // --- 1. 사용자 ID 조회 ---
     stopWatch.start("1. Fetching User IDs");
-    LocalDate today = LocalDate.now();
+    LocalDate today = LocalDate.now().minusDays(1);
     LocalDateTime startOfDay = today.atStartOfDay();
     LocalDateTime endOfDay = today.plusDays(1).atStartOfDay();
     log.info("오늘 날짜 범위 확인: {} 부터 {} 까지의 스케줄을 조회합니다.", startOfDay, endOfDay);
