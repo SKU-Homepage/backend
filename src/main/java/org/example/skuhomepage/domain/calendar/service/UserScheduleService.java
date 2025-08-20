@@ -195,7 +195,7 @@ public class UserScheduleService {
     log.info("동기 방식 푸시 알림 전송을 시작합니다...");
     stopWatch.start("1. 데이터 조회");
 
-    LocalDate today = LocalDate.now();
+    LocalDate today = LocalDate.now().minusDays(1);
     LocalDateTime startOfDay = today.atStartOfDay();
     LocalDateTime endOfDay = today.plusDays(1).atStartOfDay();
 
